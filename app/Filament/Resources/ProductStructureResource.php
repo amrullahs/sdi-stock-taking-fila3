@@ -43,6 +43,10 @@ class ProductStructureResource extends Resource
                         'FRAME' => 'FRAME',
                     ])
                     ->searchable(),
+                Forms\Components\TextInput::make('model')
+                    ->required()
+                    ->maxLength(255)
+                    ->label('Model'),
             ]);
     }
 
@@ -52,7 +56,10 @@ class ProductStructureResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->copyable()
+                    ->limit(12)
+                    ->tooltip(fn ($record): string => $record->id),
                 Tables\Columns\TextColumn::make('item_number')
                     ->label('Item Number')
                     ->searchable()
@@ -66,6 +73,10 @@ class ProductStructureResource extends Resource
                         'FRAME' => 'danger',
                         default => 'gray',
                     })
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('model')
+                    ->label('Model')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -88,17 +99,31 @@ class ProductStructureResource extends Resource
                     ])
                     ->multiple()
                     ->searchable(),
+                Tables\Filters\SelectFilter::make('model')
+                    ->label('Filter by Model')
+                    ->placeholder('Select models...')
+                    ->options(function () {
+                        return \App\Models\ProductStructure::distinct()
+                            ->pluck('model', 'model')
+                            ->filter()
+                            ->sort()
+                            ->toArray();
+                    })
+                    ->multiple()
+                    ->searchable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->color('warning'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Bulk actions removed for security - managed by Filament Shield
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('created_at', 'desc')
+            ->recordUrl(null)
+            ->recordAction(null);
     }
 
     public static function getRelations(): array
