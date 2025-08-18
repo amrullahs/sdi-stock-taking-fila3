@@ -58,7 +58,6 @@ class ProductStructureResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->copyable()
-                    ->limit(12)
                     ->tooltip(fn ($record): string => $record->id),
                 Tables\Columns\TextColumn::make('item_number')
                     ->label('Item Number')

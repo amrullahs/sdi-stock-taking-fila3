@@ -8,15 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ProductStructure extends Model
 {
     protected $table = 'index_product_structure';
-    
-    // Specify that ID is not auto-incrementing since we're using ObjectId
-    public $incrementing = false;
-    
-    // Specify that the primary key is a string (ObjectId)
-    protected $keyType = 'string';
-    
+
+    // Use auto-incrementing ID
+    public $incrementing = true;
+
+    // Specify that the primary key is an integer
+    protected $keyType = 'int';
+
     protected $fillable = [
         'item_number',
+        'unique_id',
         'category',
         'model',
     ];
@@ -25,12 +26,12 @@ class ProductStructure extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-    
+
     /**
      * Get the product structure details for this product.
      */
     public function details(): HasMany
     {
-        return $this->hasMany(ProductStructureDetail::class, 'parent_item', 'id');
+        return $this->hasMany(ProductStructureDetail::class, 'parent_item', 'unique_id');
     }
 }

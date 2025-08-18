@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductStructureDetail extends Model
 {
     protected $table = 'index_product_structure_detail';
-    
+
     public $incrementing = false;
     protected $keyType = 'string';
-    
+
     protected $fillable = [
         'component_item',
         'end_effective',
@@ -23,7 +23,7 @@ class ProductStructureDetail extends Model
         'start_effective',
         'unit_of_measure',
     ];
-    
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -31,12 +31,12 @@ class ProductStructureDetail extends Model
         'operation' => 'integer',
         'scrap' => 'integer',
     ];
-    
+
     /**
      * Get the parent product structure that owns this detail.
      */
     public function parentStructure(): BelongsTo
     {
-        return $this->belongsTo(ProductStructure::class, 'parent_item', 'id');
+        return $this->belongsTo(ProductStructure::class, 'parent_item', 'unique_id');
     }
 }
