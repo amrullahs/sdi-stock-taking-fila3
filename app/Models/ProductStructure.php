@@ -9,15 +9,23 @@ class ProductStructure extends Model
 {
     protected $table = 'index_product_structure';
     
-    // Specify that ID is not auto-incrementing since we're using ObjectId
-    public $incrementing = false;
+    // Use auto-incrementing ID
+    public $incrementing = true;
     
-    // Specify that the primary key is a string (ObjectId)
-    protected $keyType = 'string';
+    // Specify that the primary key is an integer
+    protected $keyType = 'int';
     
     protected $fillable = [
-        'item_number',
+        'product_code',
+        'product_name',
         'category',
+        'description',
+        'unit_of_measure',
+        'standard_cost',
+        'selling_price',
+        'minimum_stock',
+        'maximum_stock',
+        'is_active',
         'model',
     ];
 
