@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('m_model_structure_detail', function (Blueprint $table) {
+            $table->id();
+            $table->string('model', 255);
+            $table->string('qad', 255);
+            $table->string('desc1', 255);
+            $table->string('desc2', 255);
+            $table->string('supplier', 255);
+            $table->string('suplier_code', 255);
+            $table->integer('standard_packing');
+            $table->string('storage', 255);
+            $table->timestamp('created_at')->nullable();
+            $table->datetime('updated_at')->nullable();
+            
+            // Foreign key constraint
+            $table->foreign('model')->references('model')->on('m_model_structure')->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('m_model_structure_detail');
+    }
+};

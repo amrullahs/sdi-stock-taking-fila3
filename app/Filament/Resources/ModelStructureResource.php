@@ -5,14 +5,20 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ModelStructureResource\Pages;
 use App\Filament\Resources\ModelStructureResource\RelationManagers;
 use App\Models\ModelStructure;
+use App\Models\ModelStructureDetail;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Livewire\Component as Livewire;
 
 class ModelStructureResource extends Resource
 {
@@ -82,6 +88,15 @@ class ModelStructureResource extends Resource
                     ->searchable(),
             ])
             ->actions([
+                Tables\Actions\Action::make('view_bom')
+                    ->label('View BOM')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->modalHeading(fn ($record) => 'BOM Details - ' . $record->model)
+                    ->modalContent(fn ($record) => view('filament.modals.model-bom-table', ['record' => $record]))
+                    ->modalWidth('7xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close'),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
