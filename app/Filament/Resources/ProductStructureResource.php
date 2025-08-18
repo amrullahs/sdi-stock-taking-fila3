@@ -3,13 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductStructureResource\Pages;
-use App\Filament\Resources\ProductStructureResource\RelationManagers;
 use App\Models\ProductStructure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+// use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -113,6 +113,15 @@ class ProductStructureResource extends Resource
                     ->searchable(),
             ])
             ->actions([
+                Tables\Actions\Action::make('view_bom')
+                    ->label('View BOM')
+                    ->icon('heroicon-o-list-bullet')
+                    ->color('info')
+                    ->modalHeading(fn ($record) => 'BOM Details - ' . $record->item_number)
+                    ->modalContent(fn ($record) => view('filament.modals.bom-table', ['record' => $record]))
+                    ->modalWidth('7xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close'),
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil')

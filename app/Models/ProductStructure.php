@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductStructure extends Model
 {
@@ -24,4 +25,12 @@ class ProductStructure extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+    
+    /**
+     * Get the product structure details for this product.
+     */
+    public function details(): HasMany
+    {
+        return $this->hasMany(ProductStructureDetail::class, 'parent_item', 'id');
+    }
 }
