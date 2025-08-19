@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StockTaking extends Model
 {
@@ -38,6 +39,14 @@ class StockTaking extends Model
     public function modelStructure(): BelongsTo
     {
         return $this->belongsTo(ModelStructure::class, 'model_structure_id');
+    }
+
+    /**
+     * Get the stock taking details for this stock taking.
+     */
+    public function stockTakingDetails(): HasMany
+    {
+        return $this->hasMany(StockTakingDetail::class, 'stock_taking_id');
     }
     
     /**

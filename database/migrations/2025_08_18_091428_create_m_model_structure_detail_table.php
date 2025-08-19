@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('m_model_structure_detail', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('model_structure_id');
             $table->string('model', 255);
             $table->string('qad', 255);
             $table->string('desc1', 255);
@@ -21,10 +22,13 @@ return new class extends Migration
             $table->string('suplier_code', 255);
             $table->integer('standard_packing');
             $table->string('storage', 255);
+            $table->string('wip_id', 255)->nullable();
+            $table->string('image', 255)->nullable();
             $table->timestamp('created_at')->nullable();
             $table->datetime('updated_at')->nullable();
             
-            // Foreign key constraint
+            // Foreign key constraints
+            $table->foreign('model_structure_id')->references('id')->on('m_model_structure')->onDelete('cascade');
             $table->foreign('model')->references('model')->on('m_model_structure')->onDelete('cascade');
         });
     }

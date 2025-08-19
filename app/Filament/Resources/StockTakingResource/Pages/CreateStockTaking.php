@@ -4,7 +4,9 @@ namespace App\Filament\Resources\StockTakingResource\Pages;
 
 use App\Filament\Resources\StockTakingResource;
 use App\Models\StockTaking;
+use App\Models\StockTakingDetail;
 use App\Models\ModelStructure;
+use App\Models\ModelStructureDetail;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Notifications\Notification;
@@ -46,6 +48,32 @@ class CreateStockTaking extends CreateRecord
         $data['sto_user'] = Auth::user()->name ?? Auth::user()->email;
         
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        $stockTaking = $this->record;
+        
+        // Get all ModelStructureDetail based on model_structure_id
+        $modelStructureDetails = ModelStructureDetail::where('model_structure_id', $stockTaking->model_structure_id)->get();
+        
+        // Create StockTakingDetail for each ModelStructureDetail
+        foreach ($modelStructureDetails as $detail) {
+            StockTakingDetail::create([
+                'stock_taking_id' => $stockTaking->id,
+                'model_structure_detail_id' => $detail->id,
+                'storage_count' => 0,
+                'wip_count' => 0,
+                'ng_count' => 0,
+                'total_count' => 0,
+            ]);
+        }
+        
+        Notification::make()
+            ->title('Stock Taking Detail Created')
+            ->body("Successfully created {$modelStructureDetails->count()} stock taking detail records.")
+            ->success()
+            ->send();
     }
 
     protected function getRedirectUrl(): string

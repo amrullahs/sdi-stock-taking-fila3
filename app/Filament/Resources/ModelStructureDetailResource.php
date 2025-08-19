@@ -18,9 +18,9 @@ class ModelStructureDetailResource extends Resource
     protected static ?string $model = ModelStructureDetail::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
+
     protected static ?string $navigationLabel = 'Model Structure Details';
-    
+
     protected static ?string $navigationGroup = 'Master Data';
 
     public static function form(Form $form): Form
@@ -106,13 +106,13 @@ class ModelStructureDetailResource extends Resource
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Image')
-                    ->square()
+                    ->square(false)
                     ->getStateUsing(function (ModelStructureDetail $record): ?string {
                         // Jika field image tidak null, gunakan nilai aslinya
                         if (!empty($record->image)) {
                             return $record->image;
                         }
-                        
+
                         // Jika image null, cari file berdasarkan nilai qad
                         if (!empty($record->qad)) {
                             $extensions = ['png', 'jpg', 'jpeg', 'svg'];
@@ -123,7 +123,7 @@ class ModelStructureDetailResource extends Resource
                                 }
                             }
                         }
-                        
+
                         // Jika tidak ada file yang ditemukan, return null untuk fallback ke defaultImageUrl
                         return null;
                     })

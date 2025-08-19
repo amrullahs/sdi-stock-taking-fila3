@@ -6,6 +6,7 @@ use App\Filament\Resources\StockTakingResource\Pages;
 use App\Filament\Resources\StockTakingResource\RelationManagers;
 use App\Models\ModelStructure;
 use App\Models\StockTaking;
+use App\Models\StockTakingDetail;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -164,6 +165,19 @@ class StockTakingResource extends Resource
                     }),
             ])
             ->actions([
+                Tables\Actions\Action::make('sto_detail')
+                    ->label('STO Detail')
+                    ->icon('heroicon-o-list-bullet')
+                    ->color('info')
+                    ->modalHeading(fn ($record) => 'STO Detail - ' . $record->modelStructure->model . ' (' . $record->tanggal_sto . ')')
+                    ->modalContent(fn ($record) => view('filament.modals.sto-detail', [
+                        'stockTakingId' => $record->id,
+                        'modelName' => $record->modelStructure->model,
+                        'tanggalSto' => $record->tanggal_sto,
+                    ]))
+                    ->modalWidth('7xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close'),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
