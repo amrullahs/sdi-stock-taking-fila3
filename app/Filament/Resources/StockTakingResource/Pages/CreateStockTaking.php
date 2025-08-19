@@ -62,10 +62,10 @@ class CreateStockTaking extends CreateRecord
             StockTakingDetail::create([
                 'stock_taking_id' => $stockTaking->id,
                 'model_structure_detail_id' => $detail->id,
-                'storage_count' => 0,
-                'wip_count' => 0,
-                'ng_count' => 0,
-                'total_count' => 0,
+                'storage_count' => null,
+                'wip_count' => null,
+                'ng_count' => null,
+                'total_count' => null,
             ]);
         }
         

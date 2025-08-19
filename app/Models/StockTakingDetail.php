@@ -29,6 +29,34 @@ class StockTakingDetail extends Model
     ];
 
     /**
+     * Check if this record has been updated (any count field is not null)
+     */
+    public function isUpdated(): bool
+    {
+        return $this->storage_count !== null || 
+               $this->wip_count !== null || 
+               $this->ng_count !== null;
+    }
+
+    /**
+     * Get the actual count value, treating null as 0 for calculations
+     */
+    public function getActualStorageCount(): int
+    {
+        return $this->storage_count ?? 0;
+    }
+
+    public function getActualWipCount(): int
+    {
+        return $this->wip_count ?? 0;
+    }
+
+    public function getActualNgCount(): int
+    {
+        return $this->ng_count ?? 0;
+    }
+
+    /**
      * Relasi ke StockTaking
      */
     public function stockTaking(): BelongsTo

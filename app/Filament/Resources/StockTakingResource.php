@@ -63,17 +63,27 @@ class StockTakingResource extends Resource
                 Forms\Components\Section::make('Tracking Information')
                     ->schema([
                         Forms\Components\DateTimePicker::make('sto_start_at')
-                            ->label('Start Time'),
+                            ->label('Start Time')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('Auto-updated when first data is entered'),
                         Forms\Components\DateTimePicker::make('sto_submit_at')
-                            ->label('Submit Time'),
+                            ->label('Submit Time')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('Set when stock taking is submitted'),
                         Forms\Components\DateTimePicker::make('sto_update_at')
-                            ->label('Update Time'),
+                            ->label('Update Time')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->helperText('Auto-updated on every data change'),
                         Forms\Components\TextInput::make('progress')
                             ->label('Progress (%)')
                             ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('%'),
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->suffix('%')
+                            ->helperText('Auto-calculated based on completed entries'),
                     ])->columns(2),
             ]);
     }

@@ -48,17 +48,17 @@ class StockTakingDetailResource extends Resource
                 Forms\Components\TextInput::make('storage_count')
                     ->label('Storage Count')
                     ->numeric()
-                    ->default(0)
+                    ->placeholder('Enter storage count')
                     ->minValue(0),
                 Forms\Components\TextInput::make('wip_count')
                     ->label('WIP Count')
                     ->numeric()
-                    ->default(0)
+                    ->placeholder('Enter WIP count')
                     ->minValue(0),
                 Forms\Components\TextInput::make('ng_count')
                     ->label('NG Count')
                     ->numeric()
-                    ->default(0)
+                    ->placeholder('Enter NG count')
                     ->minValue(0),
                 Forms\Components\TextInput::make('total_count')
                     ->label('Total Count')

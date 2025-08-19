@@ -93,19 +93,22 @@ class ModelStructureDetail extends Model
             return $this->image;
         }
         
-        // Fallback ke storage/app/public/img/{qad}.png atau .jpg jika image null
+        // Fallback ke storage/app/public/img/{qad} dengan berbagai format
         if ($this->qad) {
-            $pngPath = "/storage/img/{$this->qad}.png";
-            $jpgPath = "/storage/img/{$this->qad}.jpg";
+            $formats = [
+                ['path' => "/storage/img/{$this->qad}.svg", 'file' => "storage/img/{$this->qad}.svg"],
+                ['path' => "/storage/img/{$this->qad}.png", 'file' => "storage/img/{$this->qad}.png"],
+                ['path' => "/storage/img/{$this->qad}.jpg", 'file' => "storage/img/{$this->qad}.jpg"]
+            ];
             
-            // Check if PNG exists first, then JPG
-            if (file_exists(public_path("storage/img/{$this->qad}.png"))) {
-                return $pngPath;
-            } elseif (file_exists(public_path("storage/img/{$this->qad}.jpg"))) {
-                return $jpgPath;
+            foreach ($formats as $format) {
+                if (file_exists(public_path($format['file']))) {
+                    return $format['path'];
+                }
             }
         }
         
-        return null;
+        // Return default image if no specific image found
+        return '/images/no-image.svg';
     }
 }
