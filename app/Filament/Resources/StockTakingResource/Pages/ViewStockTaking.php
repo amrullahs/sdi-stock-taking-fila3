@@ -11,7 +11,12 @@ class ViewStockTaking extends ViewRecord
 {
     protected static string $resource = StockTakingResource::class;
     
-    protected static string $view = 'filament.resources.stock-taking-resource.pages.view-stock-taking';
+    protected static string $view = 'filament.resources.stock-taking-resource.pages.view';
+
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view(static::$view, $this->getViewData());
+    }
 
     protected function getHeaderActions(): array
     {

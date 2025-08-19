@@ -8,28 +8,28 @@
                     <x-heroicon-o-clipboard-document-list class="w-5 h-5 inline mr-2" />
                     Stock Taking Information
                 </h3>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">ID</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->id }}</p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal STO</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->tanggal_sto->format('d M Y') }}</p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Model Structure</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->modelStructure->model ?? '-' }}</p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Model</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->model }}</p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                         <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -40,7 +40,7 @@
                             {{ \App\Models\StockTaking::getStatuses()[$record->status] ?? $record->status }}
                         </span>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Progress</label>
                         <div class="mt-1 flex items-center">
@@ -50,7 +50,7 @@
                             <span class="text-sm text-gray-900 dark:text-white">{{ $record->progress }}%</span>
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">STO User</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->sto_user ?? '-' }}</p>
@@ -64,7 +64,7 @@
                     <x-heroicon-o-clock class="w-5 h-5 inline mr-2" />
                     Tracking Information
                 </h3>
-                
+
                 <div class="grid grid-cols-1 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Time</label>
@@ -72,26 +72,26 @@
                             {{ $record->sto_start_at ? $record->sto_start_at->format('d M Y H:i:s') : 'Not started yet' }}
                         </p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Update</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">
                             {{ $record->sto_update_at ? $record->sto_update_at->format('d M Y H:i:s') : 'No updates yet' }}
                         </p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Submit Time</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">
                             {{ $record->sto_submit_at ? $record->sto_submit_at->format('d M Y H:i:s') : 'Not submitted yet' }}
                         </p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Created At</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->created_at->format('d M Y H:i:s') }}</p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Updated At</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->updated_at->format('d M Y H:i:s') }}</p>
@@ -108,7 +108,7 @@
                     <x-heroicon-o-chart-bar class="w-5 h-5 inline mr-2" />
                     Stock Count by QAD
                 </h3>
-                
+
                 <div class="mb-4">
                     <div class="flex flex-wrap gap-4 text-sm">
                         <div class="flex items-center">
@@ -125,7 +125,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="relative w-full" style="height: 400px; min-height: 300px;">
                     <canvas id="stockChart" class="w-full h-full"></canvas>
                 </div>
@@ -137,7 +137,7 @@
                     <x-heroicon-o-calculator class="w-5 h-5 inline mr-2" />
                     Summary
                 </h3>
-                
+
                 @php
                     $totalStorage = collect($chartData['data'])->sum('storage_count');
                     $totalWip = collect($chartData['data'])->sum('wip_count');
@@ -145,29 +145,29 @@
                     $grandTotal = $totalStorage + $totalWip + $totalNg;
                     $totalItems = count($chartData['data']);
                 @endphp
-                
+
                 <div class="grid grid-cols-2 gap-4">
                     <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                         <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ number_format($totalStorage) }}</div>
                         <div class="text-sm text-green-700 dark:text-green-300">Storage Count</div>
                     </div>
-                    
+
                     <div class="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                         <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ number_format($totalWip) }}</div>
                         <div class="text-sm text-yellow-700 dark:text-yellow-300">WIP Count</div>
                     </div>
-                    
+
                     <div class="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
                         <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ number_format($totalNg) }}</div>
                         <div class="text-sm text-red-700 dark:text-red-300">NG Count</div>
                     </div>
-                    
+
                     <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ number_format($grandTotal) }}</div>
                         <div class="text-sm text-blue-700 dark:text-blue-300">Total Count</div>
                     </div>
                 </div>
-                
+
                 <div class="mt-4 text-center">
                     <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $totalItems }} Items</div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Total QAD Items</div>
@@ -182,7 +182,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('stockChart').getContext('2d');
             const chartData = @json($chartData);
-            
+
             const chart = new Chart(ctx, {
                 type: 'bar',
                 data: {

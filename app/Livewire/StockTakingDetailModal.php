@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\StockTaking;
 use App\Models\StockTakingDetail;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -24,12 +25,14 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
     public $stockTakingId;
     public $modelName;
     public $tanggalSto;
+    public $stockTaking;
 
     public function mount($stockTakingId, $modelName, $tanggalSto)
     {
         $this->stockTakingId = $stockTakingId;
         $this->modelName = $modelName;
         $this->tanggalSto = $tanggalSto;
+        $this->stockTaking = StockTaking::find($stockTakingId);
     }
 
     public function table(Table $table): Table
@@ -191,6 +194,50 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
             'total_ng' => $details->sum('ng_count'),
             'grand_total' => $details->sum('storage_count') + $details->sum('wip_count') + $details->sum('ng_count'),
             'total_items' => $details->count(),
+        ];
+    }
+
+    public function getChartData()
+    {
+        $details = StockTakingDetail::with('modelStructureDetail')
+            ->where('stock_taking_id', $this->stockTakingId)
+            ->get();
+
+        $labels = [];
+        $storageData = [];
+        $wipData = [];
+        $ngData = [];
+        $totalData = [];
+        $qadData = [];
+        $partNumberData = [];
+        $partNameData = [];
+
+        foreach ($details as $detail) {
+            $qad = $detail->modelStructureDetail->qad ?? 'Unknown';
+            $partNumber = $detail->modelStructureDetail->part_number ?? 'Unknown';
+            $partName = $detail->modelStructureDetail->part_name ?? 'Unknown';
+            
+            $labels[] = $qad;
+            $storageData[] = $detail->storage_count ?? 0;
+            $wipData[] = $detail->wip_count ?? 0;
+            $ngData[] = $detail->ng_count ?? 0;
+            $totalData[] = ($detail->storage_count ?? 0) + ($detail->wip_count ?? 0) + ($detail->ng_count ?? 0);
+            $qadData[] = $qad;
+            $partNumberData[] = $partNumber;
+            $partNameData[] = $partName;
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => [
+                'storage_count' => $storageData,
+                'wip_count' => $wipData,
+                'ng_count' => $ngData,
+                'total_count' => $totalData,
+                'qad' => $qadData,
+                'part_number' => $partNumberData,
+                'part_name' => $partNameData,
+            ]
         ];
     }
 
