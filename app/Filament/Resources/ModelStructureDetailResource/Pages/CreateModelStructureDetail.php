@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateModelStructureDetail extends CreateRecord
 {
     protected static string $resource = ModelStructureDetailResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

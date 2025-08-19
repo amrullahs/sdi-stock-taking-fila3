@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2" rx="8"/>
+  <g transform="translate(25, 25)">
+    <path d="M12.5 15.8333C16.6421 15.8333 20 12.4754 20 8.33333C20 4.19129 16.6421 0.833333 12.5 0.833333C8.35792 0.833333 5 4.19129 5 8.33333C5 12.4754 8.35792 15.8333 12.5 15.8333Z" fill="#9ca3af"/>
+    <path d="M41.6667 45.8333H8.33333C6.49238 45.8333 5 44.341 5 42.5V35.8333C5 34.4526 5.89543 33.2818 7.23333 32.9167L15.8333 30.8333L25 35L35 30L41.6667 32.5V42.5C41.6667 44.341 40.1743 45.8333 38.3333 45.8333H41.6667Z" fill="#9ca3af"/>
+    <circle cx="35" cy="15" r="3" fill="#9ca3af"/>
+  </g>
+  <line x1="20" y1="80" x2="80" y2="20" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+  <text x="50" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6b7280">No Image</text>
+</svg>

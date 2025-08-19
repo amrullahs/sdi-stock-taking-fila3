@@ -6,6 +6,7 @@ use App\Models\ModelStructureDetail;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\Filter;
@@ -35,6 +36,30 @@ class BomTableModal extends Component implements HasForms, HasTable
                     ->label('ID')
                     ->sortable()
                     ->searchable()
+                    ->toggleable(),
+                ImageColumn::make('image')
+                    ->label('Image')
+                    ->square()
+                    ->size(60)
+                    ->getStateUsing(function ($record) {
+                        // Cek apakah field image ada dan tidak kosong
+                        if (!empty($record->image)) {
+                            return asset($record->image);
+                        }
+                        
+                        // Fallback ke gambar berdasarkan QAD
+                        $extensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+                        foreach ($extensions as $ext) {
+                            $imagePath = "storage/img/{$record->qad}.{$ext}";
+                            if (file_exists(public_path($imagePath))) {
+                                return asset($imagePath);
+                            }
+                        }
+                        
+                        // Default image jika tidak ditemukan
+                        return url('/images/no-image.svg');
+                    })
+                    ->defaultImageUrl(url('/images/no-image.svg'))
                     ->toggleable(),
                 TextColumn::make('qad')
                     ->label('QAD')

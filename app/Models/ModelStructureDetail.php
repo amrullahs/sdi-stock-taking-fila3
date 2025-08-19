@@ -10,6 +10,7 @@ class ModelStructureDetail extends Model
     protected $table = 'm_model_structure_detail';
     
     protected $fillable = [
+        'model_structure_id',
         'model',
         'qad',
         'desc1',
@@ -17,11 +18,15 @@ class ModelStructureDetail extends Model
         'supplier',
         'suplier_code',
         'standard_packing',
+        'image',
         'storage',
+        'wip_id',
     ];
     
     protected $casts = [
+        'model_structure_id' => 'integer',
         'standard_packing' => 'integer',
+        'wip_id' => 'integer',
         'created_at' => 'timestamp',
         'updated_at' => 'datetime',
     ];
@@ -30,6 +35,14 @@ class ModelStructureDetail extends Model
      * Get the model structure that owns this detail.
      */
     public function modelStructure(): BelongsTo
+    {
+        return $this->belongsTo(ModelStructure::class, 'model_structure_id');
+    }
+    
+    /**
+     * Get the model structure by model name (legacy relationship).
+     */
+    public function modelStructureByModel(): BelongsTo
     {
         return $this->belongsTo(ModelStructure::class, 'model', 'model');
     }

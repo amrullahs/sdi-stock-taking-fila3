@@ -27,6 +27,12 @@ class ModelStructureDetailResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('model_structure_id')
+                    ->label('Model Structure')
+                    ->relationship('modelStructure', 'model')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('model')
                     ->required()
                     ->maxLength(255),
@@ -39,7 +45,6 @@ class ModelStructureDetailResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('desc2')
                     ->label('Description 2')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('supplier')
                     ->required()
@@ -51,9 +56,17 @@ class ModelStructureDetailResource extends Resource
                 Forms\Components\TextInput::make('standard_packing')
                     ->required()
                     ->numeric(),
+                Forms\Components\FileUpload::make('image')
+                    ->label('Image')
+                    ->image()
+                    ->directory('model-structure-details')
+                    ->maxSize(2048),
                 Forms\Components\TextInput::make('storage')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('wip_id')
+                    ->label('WIP ID')
+                    ->numeric(),
             ]);
     }
 
@@ -63,6 +76,11 @@ class ModelStructureDetailResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('modelStructure.model')
+                    ->label('Model Structure')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('model')
                     ->searchable()
                     ->sortable(),
@@ -76,7 +94,8 @@ class ModelStructureDetailResource extends Resource
                 Tables\Columns\TextColumn::make('desc2')
                     ->label('Description 2')
                     ->searchable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('supplier')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suplier_code')
@@ -85,8 +104,38 @@ class ModelStructureDetailResource extends Resource
                 Tables\Columns\TextColumn::make('standard_packing')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Image')
+                    ->square()
+                    ->getStateUsing(function (ModelStructureDetail $record): ?string {
+                        // Jika field image tidak null, gunakan nilai aslinya
+                        if (!empty($record->image)) {
+                            return $record->image;
+                        }
+                        
+                        // Jika image null, cari file berdasarkan nilai qad
+                        if (!empty($record->qad)) {
+                            $extensions = ['png', 'jpg', 'jpeg', 'svg'];
+                            foreach ($extensions as $ext) {
+                                $imagePath = storage_path("app/public/img/{$record->qad}.{$ext}");
+                                if (file_exists($imagePath)) {
+                                    return asset("storage/img/{$record->qad}.{$ext}");
+                                }
+                            }
+                        }
+                        
+                        // Jika tidak ada file yang ditemukan, return null untuk fallback ke defaultImageUrl
+                        return null;
+                    })
+                    ->defaultImageUrl(url('/images/no-image.svg'))
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('storage')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('wip_id')
+                    ->label('WIP ID')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

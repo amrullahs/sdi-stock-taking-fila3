@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateLine extends CreateRecord
 {
     protected static string $resource = LineResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

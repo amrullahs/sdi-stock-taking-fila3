@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTestAutoPermission extends CreateRecord
 {
     protected static string $resource = TestAutoPermissionResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
