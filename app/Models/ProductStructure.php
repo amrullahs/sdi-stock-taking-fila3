@@ -17,7 +17,6 @@ class ProductStructure extends Model
 
     protected $fillable = [
         'item_number',
-        'unique_id',
         'category',
         'model',
     ];

@@ -29,7 +29,7 @@ return new class extends Migration
             
             // Foreign key constraints
             $table->foreign('model_structure_id')->references('id')->on('m_model_structure')->onDelete('cascade');
-            $table->foreign('model')->references('model')->on('m_model_structure')->onDelete('cascade');
+            // Removed foreign key on 'model' column due to missing index in referenced table
         });
     }
 

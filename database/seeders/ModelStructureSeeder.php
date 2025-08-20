@@ -29,7 +29,7 @@ class ModelStructureSeeder extends Seeder
                 ['model' => $modelData->model],
                 [
                     'model' => $modelData->model,
-                    'line' => null, // Default line kosong, bisa diisi manual nanti
+                    'line' => 'Line A', // Default line, bisa diubah manual nanti
                 ]
             );
         }

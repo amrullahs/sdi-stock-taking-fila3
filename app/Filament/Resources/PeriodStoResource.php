@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PeriodStoResource\Pages;
 use App\Filament\Resources\PeriodStoResource\RelationManagers;
 use App\Models\PeriodSto;
+use Carbon\Carbon;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
 
 class PeriodStoResource extends Resource
 {
@@ -36,7 +39,26 @@ class PeriodStoResource extends Resource
                             ->required()
                             ->native(false)
                             ->displayFormat('d/m/Y')
-                            ->closeOnDateSelection(),
+                            ->closeOnDateSelection()
+                            ->rules([
+                                function () {
+                                    return function (string $attribute, $value, \Closure $fail) {
+                                        if (!$value) return;
+                                        
+                                        $query = PeriodSto::where('period_sto', $value);
+                                        
+                                        // Ignore current record when editing
+                                        if (request()->route('record')) {
+                                            $query->where('id', '!=', request()->route('record'));
+                                        }
+                                        
+                                        if ($query->exists()) {
+                                            $date = Carbon::parse($value)->format('d/m/Y');
+                                            $fail("Sudah ada period untuk tanggal {$date}.");
+                                        }
+                                    };
+                                }
+                            ]),
                         Forms\Components\TextInput::make('site')
                             ->label('Site')
                             ->required()
@@ -47,6 +69,27 @@ class PeriodStoResource extends Resource
                             ->disabled()
                             ->dehydrated(false)
                             ->helperText('Auto-filled with current user name'),
+                        Forms\Components\FileUpload::make('excel_file')
+                            ->label('Upload Excel File')
+                            ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'])
+                            ->required()
+                            ->disk('public')
+                            ->directory('excel-imports')
+                            ->visibility('public')
+                            ->preserveFilenames()
+                            ->maxSize(10240) // 10MB max
+                            ->helperText('Upload Excel file dengan kolom: item_number, desc, location, lot, ref, status, qty_on_hand, confirming, created, total_on_hand. Download template di halaman list Period STO. Max size: 10MB')
+                            ->dehydrated(true) // Changed to true to include in form data
+                            ->afterStateUpdated(function ($state, $set) {
+                                if ($state) {
+                                    Log::info('FileUpload afterStateUpdated', [
+                                        'state' => $state,
+                                        'state_type' => gettype($state),
+                                        'is_array' => is_array($state),
+                                        'state_content' => is_array($state) ? $state : [$state]
+                                    ]);
+                                }
+                            }),
                     ])->columns(2),
             ]);
     }
@@ -82,6 +125,22 @@ class PeriodStoResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('download_template_semicolon')
+                    ->label('Download Template (Semicolon ;)')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->url(fn () => asset('storage/excel-imports/template_stock_on_hand.csv'))
+                    ->openUrlInNewTab()
+                    ->tooltip('Download template CSV dengan delimiter semicolon (;)'),
+                Tables\Actions\Action::make('download_template_comma')
+                    ->label('Download Template (Comma ,)')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('info')
+                    ->url(fn () => asset('storage/excel-imports/template_stock_on_hand_comma.csv'))
+                    ->openUrlInNewTab()
+                    ->tooltip('Download template CSV dengan delimiter comma (,)'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('period_sto')

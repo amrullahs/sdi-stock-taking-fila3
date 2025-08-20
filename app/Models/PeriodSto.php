@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 class PeriodSto extends Model
@@ -34,5 +35,10 @@ class PeriodSto extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'name');
+    }
+    
+    public function stockOnHands(): HasMany
+    {
+        return $this->hasMany(StockOnHand::class, 'period_sto_id');
     }
 }
