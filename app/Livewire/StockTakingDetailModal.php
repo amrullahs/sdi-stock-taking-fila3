@@ -89,6 +89,20 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->wrap(),
+                TextColumn::make('total_on_hand')
+                    ->label('Total On Hand')
+                    ->numeric()
+                    ->sortable()
+                    ->badge()
+                    ->color('info')
+                    ->getStateUsing(function ($record) {
+                        return $record->total_on_hand;
+                    }),
+                TextColumn::make('modelStructureDetail.storage')
+                    ->label('Address')
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(),
                 \Filament\Tables\Columns\ViewColumn::make('storage_count')
                     ->label('Storage Count')
                     ->view('filament.tables.columns.number-input-with-buttons')

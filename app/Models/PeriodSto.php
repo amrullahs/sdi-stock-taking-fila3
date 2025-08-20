@@ -41,4 +41,13 @@ class PeriodSto extends Model
     {
         return $this->hasMany(StockOnHand::class, 'period_sto_id');
     }
+    
+    /**
+     * Get formatted period STO for display
+     */
+    public function getFormattedPeriodStoAttribute(): string
+    {
+        return $this->period_sto ? $this->period_sto->format('d-m-Y') : '';
+    }
+
 }

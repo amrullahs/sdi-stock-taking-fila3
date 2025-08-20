@@ -37,7 +37,9 @@ class StockTakingResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('period_id')
                             ->label('Period STO')
-                            ->options(PeriodSto::all()->pluck('period_sto', 'id'))
+                            ->options(PeriodSto::all()->mapWithKeys(function ($period) {
+                                return [$period->id => $period->formatted_period_sto];
+                            }))
                             ->searchable()
                             ->required()
                             ->reactive()
@@ -132,11 +134,9 @@ class StockTakingResource extends Resource
                 Tables\Columns\TextColumn::make('periodSto.period_sto')
                     ->label('Period STO')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('modelStructure.model')
-                    ->label('Model Structure')
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d-m-Y') : '-'),
+
                 Tables\Columns\TextColumn::make('model')
                     ->label('Model')
                     ->searchable()
@@ -163,11 +163,7 @@ class StockTakingResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('sto_submit_at')
-                    ->label('Submit Time')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()
@@ -192,18 +188,19 @@ class StockTakingResource extends Resource
                     ->label('Period STO')
                     ->relationship('periodSto', 'period_sto')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn ($record) => \Carbon\Carbon::parse($record->period_sto)->format('d-m-Y')),
             ])
             ->actions([
                 Tables\Actions\Action::make('sto_detail')
                     ->label('STO Detail')
                     ->icon('heroicon-o-list-bullet')
                     ->color('info')
-                    ->modalHeading(fn ($record) => 'STO Detail - ' . $record->modelStructure->model . ' (' . ($record->periodSto->period_sto ?? 'N/A') . ')')
+                    ->modalHeading(fn ($record) => 'STO Detail - ' . $record->modelStructure->model . ' (' . ($record->periodSto ? \Carbon\Carbon::parse($record->periodSto->period_sto)->format('d-m-Y') : 'N/A') . ')')
                     ->modalContent(fn ($record) => view('filament.modals.sto-detail', [
                         'stockTakingId' => $record->id,
                         'modelName' => $record->modelStructure->model,
-                        'tanggalSto' => $record->periodSto->period_sto ?? 'N/A',
+                        'tanggalSto' => $record->periodSto ? \Carbon\Carbon::parse($record->periodSto->period_sto)->format('d-m-Y') : 'N/A',
                     ]))
                     ->modalWidth('7xl')
                     ->modalSubmitAction(false)

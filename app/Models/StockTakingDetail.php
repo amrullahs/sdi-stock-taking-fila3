@@ -73,6 +73,22 @@ class StockTakingDetail extends Model
     }
 
     /**
+     * Get total on hand from stock on hand table
+     */
+    public function getTotalOnHandAttribute()
+    {
+        if (!$this->modelStructureDetail || !$this->stockTaking) {
+            return 0;
+        }
+
+        $stockOnHand = StockOnHand::where('period_sto_id', $this->stockTaking->period_id)
+            ->where('item_number', $this->modelStructureDetail->qad)
+            ->first();
+
+        return $stockOnHand ? $stockOnHand->total_on_hand : 0;
+    }
+
+    /**
      * Accessor untuk menghitung total count otomatis
      */
     public function getTotalCountAttribute($value)

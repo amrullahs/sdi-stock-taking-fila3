@@ -36,7 +36,8 @@ class StockTakingDetailResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('stock_taking_id')
-                    ->relationship('stockTaking', 'tanggal_sto')
+                    ->relationship('stockTaking', 'id')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->modelStructure->model . ' - ' . ($record->periodSto ? \Carbon\Carbon::parse($record->periodSto->period_sto)->format('d-m-Y') : 'N/A'))
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -72,9 +73,9 @@ class StockTakingDetailResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('stockTaking.tanggal_sto')
-                    ->label('Tanggal STO')
-                    ->date()
+                Tables\Columns\TextColumn::make('stockTaking.periodSto.period_sto')
+                    ->label('Period STO')
+                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d-m-Y') : '-')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stockTaking.model')
                     ->label('Model')
@@ -121,6 +122,17 @@ class StockTakingDetailResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('modelStructureDetail.part_name')
                     ->label('Part Name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_on_hand')
+                    ->label('Total On Hand')
+                    ->numeric()
+                    ->sortable()
+                    ->getStateUsing(function ($record) {
+                        return $record->total_on_hand;
+                    }),
+                Tables\Columns\TextColumn::make('modelStructureDetail.storage')
+                    ->label('Address')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('storage_count')

@@ -17,7 +17,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Period STO</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->periodSto->period_sto ?? '-' }}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->periodSto ? \Carbon\Carbon::parse($record->periodSto->period_sto)->format('d-m-Y') : '-' }}</p>
                     </div>
 
                     <div>
