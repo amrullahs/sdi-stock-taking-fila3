@@ -27,7 +27,6 @@ class StockOnHand extends Model
     protected $casts = [
         'created' => 'date',
         'uploaded' => 'datetime',
-        'item_number' => 'integer',
         'lot' => 'integer',
         'qty_on_hand' => 'integer',
         'total_on_hand' => 'integer',

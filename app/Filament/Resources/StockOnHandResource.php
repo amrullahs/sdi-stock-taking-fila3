@@ -81,10 +81,9 @@ class StockOnHandResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('periodSto'))
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable(),
+                // Default visible columns
                 Tables\Columns\TextColumn::make('periodSto.period_sto')
                     ->label('Period STO')
                     ->date('d/m/Y')
@@ -94,31 +93,41 @@ class StockOnHandResource extends Resource
                     ->label('Item Number')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('desc')
-                    ->label('Description')
-                    ->limit(30)
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('location')
                     ->label('Location')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lot')
-                    ->label('Lot')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge(),
-                Tables\Columns\TextColumn::make('qty_on_hand')
-                    ->label('Qty On Hand')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('total_on_hand')
                     ->label('Total On Hand')
                     ->numeric()
                     ->sortable(),
+                
+                // Toggleable columns (hidden by default)
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('desc')
+                    ->label('Description')
+                    ->limit(30)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('lot')
+                    ->label('Lot')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('qty_on_hand')
+                    ->label('Qty On Hand')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('uploaded')
                     ->label('Uploaded')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('period_sto_id')
@@ -155,7 +164,9 @@ class StockOnHandResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('uploaded', 'desc');
+            ->defaultSort('uploaded', 'desc')
+            ->defaultPaginationPageOption(25)
+            ->paginationPageOptions([10, 25, 50, 100]);
     }
 
     public static function getRelations(): array

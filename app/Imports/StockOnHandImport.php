@@ -37,20 +37,27 @@ class StockOnHandImport implements ToModel, WithHeadingRow, WithCustomCsvSetting
             return null;
         }
         
-        return new StockOnHand([
-            'item_number' => $itemNumber,
-            'desc' => !empty($row['desc']) ? trim($row['desc']) : null,
-            'location' => !empty($row['location']) ? trim($row['location']) : null,
-            'lot' => !empty($row['lot']) ? trim($row['lot']) : null,
-            'ref' => !empty($row['ref']) ? trim($row['ref']) : null,
-            'status' => !empty($row['status']) ? trim($row['status']) : null,
-            'qty_on_hand' => is_numeric($row['qty_on_hand'] ?? null) ? (int)$row['qty_on_hand'] : null,
-            'confirming' => !empty($row['confirming']) ? trim($row['confirming']) : null,
-            'created' => isset($row['created']) && !empty($row['created']) ? Carbon::parse($row['created']) : null,
-            'total_on_hand' => is_numeric($row['total_on_hand'] ?? null) ? (int)$row['total_on_hand'] : null,
-            'period_sto_id' => $this->periodStoId,
-            'uploaded' => now(),
-        ]);
+        // Use updateOrCreate to prevent duplicates
+        StockOnHand::updateOrCreate(
+            [
+                'item_number' => $itemNumber,
+                'period_sto_id' => $this->periodStoId,
+            ],
+            [
+                'desc' => !empty($row['desc']) ? trim($row['desc']) : null,
+                'location' => !empty($row['location']) ? trim($row['location']) : null,
+                'lot' => !empty($row['lot']) ? trim($row['lot']) : null,
+                'ref' => !empty($row['ref']) ? trim($row['ref']) : null,
+                'status' => !empty($row['status']) ? trim($row['status']) : null,
+                'qty_on_hand' => is_numeric($row['qty_on_hand'] ?? null) ? (int)$row['qty_on_hand'] : null,
+                'confirming' => !empty($row['confirming']) ? trim($row['confirming']) : null,
+                'created' => isset($row['created']) && !empty($row['created']) ? Carbon::parse($row['created']) : null,
+                'total_on_hand' => is_numeric($row['total_on_hand'] ?? null) ? (int)$row['total_on_hand'] : null,
+                'uploaded' => now(),
+            ]
+        );
+        
+        return null; // Return null since we're handling the creation manually
     }
 
     public function getCsvSettings(): array
