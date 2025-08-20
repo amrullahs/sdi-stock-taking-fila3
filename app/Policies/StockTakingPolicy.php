@@ -39,7 +39,13 @@ class StockTakingPolicy
      */
     public function update(User $user, StockTaking $stockTaking): bool
     {
-        return $user->can('update_stock::taking');
+        // Super admin can update any stock taking
+        if ($user->hasRole('super_admin')) {
+            return $user->can('update_stock::taking');
+        }
+        
+        // Regular users can only update stock taking they created
+        return $user->can('update_stock::taking') && $stockTaking->sto_user === $user->name;
     }
 
     /**
@@ -47,7 +53,13 @@ class StockTakingPolicy
      */
     public function delete(User $user, StockTaking $stockTaking): bool
     {
-        return $user->can('delete_stock::taking');
+        // Super admin can delete any stock taking
+        if ($user->hasRole('super_admin')) {
+            return $user->can('delete_stock::taking');
+        }
+        
+        // Regular users can only delete stock taking they created
+        return $user->can('delete_stock::taking') && $stockTaking->sto_user === $user->name;
     }
 
     /**
@@ -55,7 +67,8 @@ class StockTakingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock::taking');
+        // Only super admin can bulk delete to enforce individual ownership checks for regular users
+        return $user->hasRole('super_admin') && $user->can('delete_any_stock::taking');
     }
 
     /**

@@ -136,7 +136,10 @@ class StockTakingResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d-m-Y') : '-'),
-
+                Tables\Columns\TextColumn::make('modelStructure.model')
+                    ->label('Model Structure')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('model')
                     ->label('Model')
                     ->searchable()
@@ -163,7 +166,11 @@ class StockTakingResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-
+                Tables\Columns\TextColumn::make('sto_submit_at')
+                    ->label('Submit Time')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()
