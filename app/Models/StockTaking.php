@@ -22,7 +22,7 @@ class StockTaking extends Model
     }
     
     protected $fillable = [
-        'tanggal_sto',
+        'period_id',
         'sto_start_at',
         'sto_submit_at',
         'sto_update_at',
@@ -34,7 +34,7 @@ class StockTaking extends Model
     ];
     
     protected $casts = [
-        'tanggal_sto' => 'date',
+        'period_id' => 'integer',
         'sto_start_at' => 'datetime',
         'sto_submit_at' => 'datetime',
         'sto_update_at' => 'datetime',
@@ -50,6 +50,11 @@ class StockTaking extends Model
     public function modelStructure(): BelongsTo
     {
         return $this->belongsTo(ModelStructure::class, 'model_structure_id');
+    }
+
+    public function periodSto(): BelongsTo
+    {
+        return $this->belongsTo(PeriodSto::class, 'period_id');
     }
 
     /**

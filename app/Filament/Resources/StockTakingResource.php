@@ -7,6 +7,7 @@ use App\Filament\Resources\StockTakingResource\RelationManagers;
 use App\Models\ModelStructure;
 use App\Models\StockTaking;
 use App\Models\StockTakingDetail;
+use App\Models\PeriodSto;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -34,10 +35,27 @@ class StockTakingResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Stock Taking Information')
                     ->schema([
-                        Forms\Components\DatePicker::make('tanggal_sto')
-                            ->label('Tanggal STO')
+                        Forms\Components\Select::make('period_id')
+                            ->label('Period STO')
+                            ->options(PeriodSto::all()->pluck('period_sto', 'id'))
+                            ->searchable()
                             ->required()
-                            ->default(now()),
+                            ->reactive()
+                            ->rules([
+                                function (callable $get) {
+                                    return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                        $modelStructureId = $get('model_structure_id');
+                                        if ($modelStructureId && $value) {
+                                            $exists = \App\Models\StockTaking::where('period_id', $value)
+                                                ->where('model_structure_id', $modelStructureId)
+                                                ->exists();
+                                            if ($exists) {
+                                                $fail('Kombinasi Period STO dan Model Structure sudah ada.');
+                                            }
+                                        }
+                                    };
+                                }
+                            ]),
                         Forms\Components\Select::make('model_structure_id')
                             ->label('Model Structure')
                             ->relationship('modelStructure', 'model')
@@ -52,7 +70,22 @@ class StockTakingResource extends Resource
                                         $set('model', $modelStructure->model);
                                     }
                                 }
-                            }),
+                            })
+                            ->rules([
+                                function (callable $get) {
+                                    return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                        $periodId = $get('period_id');
+                                        if ($periodId && $value) {
+                                            $exists = \App\Models\StockTaking::where('period_id', $periodId)
+                                                ->where('model_structure_id', $value)
+                                                ->exists();
+                                            if ($exists) {
+                                                $fail('Kombinasi Period STO dan Model Structure sudah ada.');
+                                            }
+                                        }
+                                    };
+                                }
+                            ]),
                         Forms\Components\TextInput::make('model')
                             ->label('Model')
                             ->maxLength(255)
@@ -96,9 +129,9 @@ class StockTakingResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_sto')
-                    ->label('Tanggal STO')
-                    ->date()
+                Tables\Columns\TextColumn::make('periodSto.period_sto')
+                    ->label('Period STO')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('modelStructure.model')
                     ->label('Model Structure')
@@ -155,35 +188,22 @@ class StockTakingResource extends Resource
                     ->relationship('modelStructure', 'model')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\Filter::make('tanggal_sto')
-                    ->form([
-                        Forms\Components\DatePicker::make('from')
-                            ->label('From Date'),
-                        Forms\Components\DatePicker::make('until')
-                            ->label('Until Date'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_sto', '>=', $date),
-                            )
-                            ->when(
-                                $data['until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_sto', '<=', $date),
-                            );
-                    }),
+                SelectFilter::make('period_id')
+                    ->label('Period STO')
+                    ->relationship('periodSto', 'period_sto')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\Action::make('sto_detail')
                     ->label('STO Detail')
                     ->icon('heroicon-o-list-bullet')
                     ->color('info')
-                    ->modalHeading(fn ($record) => 'STO Detail - ' . $record->modelStructure->model . ' (' . $record->tanggal_sto . ')')
+                    ->modalHeading(fn ($record) => 'STO Detail - ' . $record->modelStructure->model . ' (' . ($record->periodSto->period_sto ?? 'N/A') . ')')
                     ->modalContent(fn ($record) => view('filament.modals.sto-detail', [
                         'stockTakingId' => $record->id,
                         'modelName' => $record->modelStructure->model,
-                        'tanggalSto' => $record->tanggal_sto,
+                        'tanggalSto' => $record->periodSto->period_sto ?? 'N/A',
                     ]))
                     ->modalWidth('7xl')
                     ->modalSubmitAction(false)

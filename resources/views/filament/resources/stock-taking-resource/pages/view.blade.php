@@ -16,8 +16,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal STO</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->tanggal_sto->format('d M Y') }}</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Period STO</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $record->periodSto->period_sto ?? '-' }}</p>
                     </div>
 
                     <div>
