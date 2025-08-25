@@ -85,8 +85,8 @@ class StockTakingDetailResource extends Resource
                     ->label('Image')
                     ->circular(false)
                     ->square(false)
-                    ->width(120)
-                    ->height(80)
+                    ->width(200)
+                    ->height(150)
                     ->extraImgAttributes([
                         'style' => 'object-fit: contain; width: 100%; height: 100%;'
                     ])
@@ -116,14 +116,19 @@ class StockTakingDetailResource extends Resource
                         return null;
                     })
                     ->defaultImageUrl('/images/no-image.svg'),
-                Tables\Columns\TextColumn::make('modelStructureDetail.part_number')
-                    ->label('Part Number')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('modelStructureDetail.part_name')
-                    ->label('Part Name')
-                    ->searchable()
-                    ->sortable(),
+                Tables\Columns\Layout\Stack::make([
+                    Tables\Columns\TextColumn::make('modelStructureDetail.part_number')
+                        ->searchable()
+                        ->sortable()
+                        ->weight('bold')
+                        ->color('primary'),
+                    Tables\Columns\TextColumn::make('modelStructureDetail.part_name')
+                        ->searchable()
+                        ->sortable()
+                        ->color('gray')
+                        ->size('sm')
+                        ->wrap(),
+                ]),
                 Tables\Columns\TextColumn::make('total_on_hand')
                     ->label('Total On Hand')
                     ->numeric()

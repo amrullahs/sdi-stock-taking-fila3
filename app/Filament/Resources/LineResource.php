@@ -35,6 +35,7 @@ class LineResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('leader')
+                    ->required()
                     ->maxLength(255),
             ]);
     }

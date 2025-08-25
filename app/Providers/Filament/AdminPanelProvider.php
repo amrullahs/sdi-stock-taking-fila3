@@ -7,6 +7,7 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -31,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -38,9 +40,26 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->navigationGroups([
-                'Stock Taking',
-                'Master Data',
-                'User Management',
+                NavigationGroup::make()
+                    ->label('Line STO')
+                    ->icon('heroicon-o-clipboard-document-list')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Stock On Hand')
+                    ->icon('heroicon-o-cube')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Stock Taking')
+                    ->icon('heroicon-o-archive-box')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Master Data')
+                    ->icon('heroicon-o-table-cells')
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('User Management')
+                    ->icon('heroicon-o-users')
+                    ->collapsed(),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

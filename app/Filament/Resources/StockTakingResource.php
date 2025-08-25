@@ -127,19 +127,11 @@ class StockTakingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('periodSto.period_sto')
                     ->label('Period STO')
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d-m-Y') : '-'),
-                Tables\Columns\TextColumn::make('modelStructure.model')
-                    ->label('Model Structure')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('model')
                     ->label('Model')
                     ->searchable()
@@ -163,11 +155,6 @@ class StockTakingResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('sto_start_at')
                     ->label('Start Time')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('sto_submit_at')
-                    ->label('Submit Time')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),

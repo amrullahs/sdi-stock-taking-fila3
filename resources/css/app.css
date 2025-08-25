@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Maximize view with tight margins and 60% viewport height */
+.fi-ta-content {
+    height: 60vh !important;
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.fi-ta-ctn {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.fi-ta {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Container optimization for maximum view */
+.container {
+    margin: 0 !important;
+    padding: 8px !important;
+    max-width: 100% !important;
+}
+
+.filament-table-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Modal height optimization - 95% of viewport height */
+.fi-modal-window {
+    max-height: 95vh !important;
+    height: auto !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Modal content with scrollbar when overflow */
+.fi-modal-content {
+    overflow-y: auto !important;
+    max-height: calc(95vh - 120px) !important;
+    flex: 1 !important;
+}
+
+/* Ensure modal header stays fixed */
+.fi-modal-header {
+    flex-shrink: 0 !important;
+}

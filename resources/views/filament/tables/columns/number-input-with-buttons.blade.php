@@ -1,4 +1,4 @@
-<div class="flex items-center justify-center space-x-1" x-data="{
+<div class="flex items-center justify-center" x-data="{
     value: {{ $getState() ?? 'null' }},
     isLoading: false,
     async updateValue(newValue) {
@@ -29,22 +29,10 @@
         }
     }
 }">
-    <!-- Decrease Button -->
-    <button 
-        type="button"
-        class="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-500 bg-gray-100 border border-gray-300 rounded-l hover:bg-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-600"
-        x-bind:disabled="isLoading || (value !== null && value <= 0)"
-        x-on:click="updateValue(value - 1)"
-    >
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-        </svg>
-    </button>
-
     <!-- Input Field -->
     <input 
         type="number" 
-        class="w-16 h-6 text-xs text-center border-t border-b border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        class="w-16 h-6 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         x-model="value"
         x-bind:disabled="isLoading"
         x-on:change="updateValue(parseInt($event.target.value) || 0)"
@@ -54,18 +42,6 @@
         step="1"
         x-bind:class="{ 'text-gray-400 italic': value === null }"
     >
-
-    <!-- Increase Button -->
-    <button 
-        type="button"
-        class="flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-500 bg-gray-100 border border-gray-300 rounded-r hover:bg-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-600"
-        x-bind:disabled="isLoading"
-        x-on:click="updateValue(value + 1)"
-    >
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-    </button>
 
     <!-- Loading Indicator -->
     <div x-show="isLoading" class="ml-1">

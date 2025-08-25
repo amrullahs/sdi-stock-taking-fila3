@@ -1,19 +1,6 @@
 <!-- Container -->
 <div class="container mx-auto p-6">
 
-
-    {{-- Info banner --}}
-    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6">
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <p class="text-sm text-blue-800 dark:text-blue-200">
-                <strong>Tip:</strong> Click on Storage Count, WIP Count, or NG Count cells to edit values directly. Total Count will be calculated automatically.
-            </p>
-        </div>
-    </div>
-
     {{-- Filament Table --}}
     <div class="filament-table-container mt-6">
         {{ $this->table }}

@@ -20,7 +20,7 @@ class StockOnHandResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
     
-    protected static ?string $navigationGroup = 'Stock Taking';
+    protected static ?string $navigationGroup = 'Stock On Hand';
     
     protected static ?string $navigationLabel = 'Stock On Hand';
     

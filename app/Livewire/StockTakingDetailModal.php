@@ -9,6 +9,10 @@ use Filament\Forms\Contracts\HasForms;
 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
@@ -44,12 +48,14 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
                     ->where('stock_taking_id', $this->stockTakingId)
             )
             ->columns([
-                \Filament\Tables\Columns\ImageColumn::make('modelStructureDetail.image_url')
+
+
+                ImageColumn::make('modelStructureDetail.image_url')
                     ->label('Image')
                     ->circular(false)
                     ->square(false)
-                    ->width(180)
-                    ->height(120)
+                    ->width(250)
+                    ->height(180)
                     ->extraAttributes(['class' => 'p-0 m-0'])
                     ->extraImgAttributes([
                         'style' => 'object-fit: contain; width: 100%; height: 100%;'
@@ -81,13 +87,16 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
                     })
                     ->defaultImageUrl('/images/no-image.svg'),
                 TextColumn::make('modelStructureDetail.part_number')
-                    ->label('Part Number')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('modelStructureDetail.part_name')
-                    ->label('Part Name')
                     ->searchable()
                     ->sortable()
+                    ->weight('bold')
+                    ->color('primary'),
+
+                TextColumn::make('modelStructureDetail.part_name')
+                    ->searchable()
+                    ->sortable()
+                    ->color('gray')
+                    ->size('sm')
                     ->wrap(),
                 TextColumn::make('total_on_hand')
                     ->label('Total On Hand')
@@ -103,19 +112,19 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
                     ->searchable()
                     ->sortable()
                     ->wrap(),
-                \Filament\Tables\Columns\ViewColumn::make('storage_count')
+                ViewColumn::make('storage_count')
                     ->label('Storage Count')
                     ->view('filament.tables.columns.number-input-with-buttons')
                     ->viewData(['columnName' => 'storage_count'])
                     ->width('120px')
                     ->extraAttributes(['class' => 'text-center']),
-                \Filament\Tables\Columns\ViewColumn::make('wip_count')
+                ViewColumn::make('wip_count')
                     ->label('WIP Count')
                     ->view('filament.tables.columns.number-input-with-buttons')
                     ->viewData(['columnName' => 'wip_count'])
                     ->width('120px')
                     ->extraAttributes(['class' => 'text-center']),
-                \Filament\Tables\Columns\ViewColumn::make('ng_count')
+                ViewColumn::make('ng_count')
                     ->label('NG Count')
                     ->view('filament.tables.columns.number-input-with-buttons')
                     ->viewData(['columnName' => 'ng_count'])
@@ -137,6 +146,7 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
                 SelectFilter::make('has_storage')
                     ->label('Has Storage Count')
@@ -230,7 +240,7 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
             $qad = $detail->modelStructureDetail->qad ?? 'Unknown';
             $partNumber = $detail->modelStructureDetail->part_number ?? 'Unknown';
             $partName = $detail->modelStructureDetail->part_name ?? 'Unknown';
-            
+
             $labels[] = $qad;
             $storageData[] = $detail->storage_count ?? 0;
             $wipData[] = $detail->wip_count ?? 0;
@@ -258,35 +268,35 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
     public function updateCount($recordId, $field, $value)
     {
         $detail = StockTakingDetail::find($recordId);
-        
+
         if ($detail) {
             $stockTaking = $detail->stockTaking;
-            
+
             // Check if this is the first update for the entire stock taking
             $isFirstUpdate = false;
             if ($stockTaking && $stockTaking->isFirstUpdate()) {
                 $isFirstUpdate = true;
             }
-            
+
             $detail->$field = $value;
-            
+
             // Recalculate total_count
-            $detail->total_count = ($detail->storage_count ?? 0) + 
-                                 ($detail->wip_count ?? 0) + 
-                                 ($detail->ng_count ?? 0);
-            
+            $detail->total_count = ($detail->storage_count ?? 0) +
+                ($detail->wip_count ?? 0) +
+                ($detail->ng_count ?? 0);
+
             $detail->save();
-            
+
             // Update timestamps and progress for the parent StockTaking
             if ($stockTaking) {
                 // Set start time if this is the first update
                 if ($isFirstUpdate) {
                     $stockTaking->setStartTimeIfNotSet();
                 }
-                
+
                 // Always update the update time
                 $stockTaking->updateTimestamp();
-                
+
                 // Update progress
                 $stockTaking->updateProgress();
             }
