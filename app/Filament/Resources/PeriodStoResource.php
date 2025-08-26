@@ -22,11 +22,11 @@ class PeriodStoResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     
-    protected static ?string $navigationGroup = 'Stock Taking';
+    protected static ?string $navigationGroup = 'Periode STO';
     
     protected static ?string $navigationLabel = 'Period STO';
     
-    protected static ?int $navigationSort = 0;
+    protected static ?int $navigationSort = -20;
 
     public static function form(Form $form): Form
     {
@@ -64,6 +64,14 @@ class PeriodStoResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->default('7000'),
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'open' => 'Open',
+                                'close' => 'Close',
+                            ])
+                            ->default('open')
+                            ->required(),
                         Forms\Components\TextInput::make('created_by')
                             ->label('Created By')
                             ->disabled()
@@ -111,6 +119,15 @@ class PeriodStoResource extends Resource
                     ->label('Site')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'open' => 'success',
+                        'close' => 'danger',
+                    })
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_by')
                     ->label('Created By')
                     ->searchable()

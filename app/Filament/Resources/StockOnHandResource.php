@@ -20,11 +20,11 @@ class StockOnHandResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
     
-    protected static ?string $navigationGroup = 'Stock On Hand';
+    protected static ?string $navigationGroup = 'Periode STO';
     
     protected static ?string $navigationLabel = 'Stock On Hand';
     
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

@@ -25,16 +25,12 @@ class StockOnHand extends Model
     ];
     
     protected $casts = [
-        'created' => 'date',
-        'uploaded' => 'datetime',
-        'lot' => 'integer',
-        'qty_on_hand' => 'integer',
-        'total_on_hand' => 'integer',
-        'period_sto_id' => 'integer'
+        'created' => 'datetime',
+        'uploaded' => 'datetime'
     ];
     
     public function periodSto(): BelongsTo
     {
-        return $this->belongsTo(PeriodSto::class, 'period_sto_id');
+        return $this->belongsTo(PeriodSto::class);
     }
 }

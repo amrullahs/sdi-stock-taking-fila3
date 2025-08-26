@@ -10,14 +10,24 @@ class LineSto extends Model
     protected $table = 't_line_sto';
     
     protected $fillable = [
-        'period_sto',
+        'period_id',
         'line_id',
         'created_by',
         'site',
+        'tanggal_sto',
+        'sto_start_at',
+        'sto_submit_at',
+        'sto_update_at',
+        'status',
+        'progress',
     ];
     
     protected $casts = [
-        'period_sto' => 'date',
+        'tanggal_sto' => 'date',
+        'sto_start_at' => 'datetime',
+        'sto_submit_at' => 'datetime',
+        'sto_update_at' => 'datetime',
+        'progress' => 'integer',
     ];
     
     /**
@@ -26,5 +36,13 @@ class LineSto extends Model
     public function line(): BelongsTo
     {
         return $this->belongsTo(Line::class, 'line_id');
+    }
+    
+    /**
+     * Get the period STO that owns the LineSto
+     */
+    public function periodSto(): BelongsTo
+    {
+        return $this->belongsTo(PeriodSto::class, 'period_id');
     }
 }

@@ -15,6 +15,7 @@ class PeriodSto extends Model
         'period_sto',
         'created_by',
         'site',
+        'status',
     ];
     
     protected $casts = [
@@ -40,6 +41,14 @@ class PeriodSto extends Model
     public function stockOnHands(): HasMany
     {
         return $this->hasMany(StockOnHand::class, 'period_sto_id');
+    }
+    
+    /**
+     * Get the line STOs for the period STO
+     */
+    public function lineStos(): HasMany
+    {
+        return $this->hasMany(LineSto::class, 'period_id');
     }
     
     /**
