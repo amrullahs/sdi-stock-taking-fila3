@@ -37,7 +37,7 @@ class StockTakingDetailResource extends Resource
             ->schema([
                 Forms\Components\Select::make('stock_taking_id')
                     ->relationship('stockTaking', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->modelStructure->model . ' - ' . ($record->periodSto ? \Carbon\Carbon::parse($record->periodSto->period_sto)->format('d-m-Y') : 'N/A'))
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record->modelStructure->model . ' - ' . ($record->periodSto ? \Carbon\Carbon::parse($record->periodSto->period_sto)->format('d-m-Y') : 'N/A'))
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -75,7 +75,7 @@ class StockTakingDetailResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('stockTaking.periodSto.period_sto')
                     ->label('Period STO')
-                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d-m-Y') : '-')
+                    ->formatStateUsing(fn($state) => $state ? \Carbon\Carbon::parse($state)->format('d-m-Y') : '-')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stockTaking.model')
                     ->label('Model')
@@ -95,7 +95,7 @@ class StockTakingDetailResource extends Resource
                         if (!$modelStructureDetail) {
                             return null;
                         }
-                        
+
                         // Jika field image tidak null, gunakan nilai aslinya
                         if (!empty($modelStructureDetail->image)) {
                             return $modelStructureDetail->image;
@@ -153,7 +153,7 @@ class StockTakingDetailResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_count')
-                    ->label('Total')
+                    ->label('Total Semua')
                     ->numeric()
                     ->sortable()
                     ->getStateUsing(function ($record) {

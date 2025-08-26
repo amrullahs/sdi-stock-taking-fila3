@@ -15,16 +15,18 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
+use Filament\Support\Enums\MaxWidth;
 
 class LineStoResource extends Resource
 {
     protected static ?string $model = LineSto::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
+
     protected static ?string $navigationGroup = 'Line STO';
-    
-    protected static ?int $navigationSort = -10;
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -42,27 +44,30 @@ class LineStoResource extends Resource
                     })
                     ->searchable()
                     ->required()
-                    ->placeholder('Pilih Period STO'),
-                    
+                    ->placeholder('Pilih Period STO')
+                    ->disabled(fn($record) => $record && $record->status === 'onprogress'),
+
                 Forms\Components\Select::make('line_id')
                     ->label('Line')
                     ->options(Line::all()->pluck('line', 'id'))
                     ->searchable()
-                    ->required(),
-                    
+                    ->required()
+                    ->disabled(fn($record) => $record && $record->status === 'onprogress'),
+
                 Forms\Components\TextInput::make('created_by')
                     ->label('Created By')
                     ->maxLength(255)
                     ->default(fn() => Auth::user()?->name ?? Auth::user()?->email)
                     ->disabled()
                     ->dehydrated(),
-                    
+
                 Forms\Components\TextInput::make('site')
                     ->label('Site')
                     ->maxLength(255)
                     ->default('7000')
-                    ->required(),
-                    
+                    ->required()
+                    ->disabled(fn($record) => $record && $record->status === 'onprogress'),
+
                 Forms\Components\DatePicker::make('tanggal_sto')
                     ->label('Tanggal STO')
                     ->native(false)
@@ -71,39 +76,44 @@ class LineStoResource extends Resource
                     ->disabled()
                     ->dehydrated()
                     ->closeOnDateSelection(),
-                    
+
                 Forms\Components\DateTimePicker::make('sto_start_at')
                     ->label('STO Start At')
                     ->native(false)
                     ->displayFormat('d/m/Y H:i')
                     ->disabled()
                     ->dehydrated(false),
-                    
+
                 Forms\Components\DateTimePicker::make('sto_submit_at')
                     ->label('STO Submit At')
                     ->native(false)
                     ->displayFormat('d/m/Y H:i')
                     ->disabled()
                     ->dehydrated(false),
-                    
+
                 Forms\Components\DateTimePicker::make('sto_update_at')
                     ->label('STO Update At')
                     ->native(false)
                     ->displayFormat('d/m/Y H:i')
                     ->disabled()
                     ->dehydrated(false),
-                    
+
                 Forms\Components\Select::make('status')
                     ->label('Status')
-                    ->options([
-                        'open' => 'Open',
-                        'onprogress' => 'On Progress',
-                        'close' => 'Close',
-                    ])
+                    ->options(function ($record) {
+                        if ($record && $record->status === 'onprogress') {
+                            return ['close' => 'Close'];
+                        }
+                        return [
+                            'open' => 'Open',
+                            'onprogress' => 'On Progress',
+                            'close' => 'Close',
+                        ];
+                    })
                     ->default('open')
-                    ->disabled()
+                    ->disabled(fn($record) => !$record || $record->status !== 'onprogress')
                     ->dehydrated(),
-                    
+
                 Forms\Components\TextInput::make('progress')
                     ->label('Progress (%)')
                     ->numeric()
@@ -122,78 +132,118 @@ class LineStoResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
-                    
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('periodSto.period_sto')
                     ->label('Period STO')
                     ->date('d/m/Y')
                     ->sortable()
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('line.line')
                     ->label('Line')
                     ->sortable()
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_by')
                     ->label('Created By')
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('site')
                     ->label('Site')
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('tanggal_sto')
                     ->label('Tanggal STO')
                     ->date('d/m/Y')
                     ->sortable()
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('sto_start_at')
                     ->label('STO Start')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
-                    
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('sto_submit_at')
                     ->label('STO Submit')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
-                    
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('sto_update_at')
                     ->label('STO Update')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
-                    
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'open' => 'gray',
+                    ->color(fn(string $state): string => match ($state) {
+                        'open' => 'danger',
                         'onprogress' => 'warning',
                         'close' => 'success',
                     })
                     ->sortable()
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('progress')
                     ->label('Progress')
-                    ->formatStateUsing(fn ($state) => $state . '%')
-                    ->sortable(),
-                    
+                    ->formatStateUsing(fn($state) => $state . '%')
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()
-                    ->sortable(),
-                    
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Updated At')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('period_id')
+                    ->label('Period STO')
+                    ->relationship('periodSto', 'period_sto')
+                    ->searchable()
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn($record) => \Carbon\Carbon::parse($record->period_sto)->format('d/m/Y') . ' - ' . $record->site),
+
+                Tables\Filters\SelectFilter::make('line_id')
+                    ->label('Line')
+                    ->relationship('line', 'line')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'open' => 'Open',
+                        'onprogress' => 'On Progress',
+                        'close' => 'Close',
+                    ])
+                    ->searchable(),
             ])
             ->actions([
+                RelationManagerAction::make('lineStoDetails')
+                    ->label('Detail')
+                    ->icon('heroicon-o-clipboard-document-list')
+                    ->color('info')
+                    ->modalHeading(false)
+                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                    ->relationManager(RelationManagers\LineStoDetailsRelationManager::make()),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -206,7 +256,7 @@ class LineStoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\LineStoDetailsRelationManager::class,
         ];
     }
 

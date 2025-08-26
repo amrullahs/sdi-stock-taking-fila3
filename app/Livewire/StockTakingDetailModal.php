@@ -113,7 +113,7 @@ class StockTakingDetailModal extends Component implements HasForms, HasTable
                     ->sortable()
                     ->wrap(),
                 ViewColumn::make('storage_count')
-                    ->label('Storage Count')
+                    ->label('Storage Count X')
                     ->view('filament.tables.columns.number-input-with-buttons')
                     ->viewData(['columnName' => 'storage_count'])
                     ->width('120px')

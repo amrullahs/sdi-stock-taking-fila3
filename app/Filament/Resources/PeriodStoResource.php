@@ -15,17 +15,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
+use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 
 class PeriodStoResource extends Resource
 {
     protected static ?string $model = PeriodSto::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    
+
     protected static ?string $navigationGroup = 'Periode STO';
-    
+
     protected static ?string $navigationLabel = 'Period STO';
-    
+
     protected static ?int $navigationSort = -20;
 
     public static function form(Form $form): Form
@@ -44,14 +45,14 @@ class PeriodStoResource extends Resource
                                 function () {
                                     return function (string $attribute, $value, \Closure $fail) {
                                         if (!$value) return;
-                                        
+
                                         $query = PeriodSto::where('period_sto', $value);
-                                        
+
                                         // Ignore current record when editing
                                         if (request()->route('record')) {
                                             $query->where('id', '!=', request()->route('record'));
                                         }
-                                        
+
                                         if ($query->exists()) {
                                             $date = Carbon::parse($value)->format('d/m/Y');
                                             $fail("Sudah ada period untuk tanggal {$date}.");
@@ -122,7 +123,7 @@ class PeriodStoResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'open' => 'success',
                         'close' => 'danger',
                     })
@@ -148,14 +149,14 @@ class PeriodStoResource extends Resource
                     ->label('Download Template (Semicolon ;)')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
-                    ->url(fn () => asset('storage/excel-imports/template_stock_on_hand.csv'))
+                    ->url(fn() => asset('storage/excel-imports/template_stock_on_hand.csv'))
                     ->openUrlInNewTab()
                     ->tooltip('Download template CSV dengan delimiter semicolon (;)'),
                 Tables\Actions\Action::make('download_template_comma')
                     ->label('Download Template (Comma ,)')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('info')
-                    ->url(fn () => asset('storage/excel-imports/template_stock_on_hand_comma.csv'))
+                    ->url(fn() => asset('storage/excel-imports/template_stock_on_hand_comma.csv'))
                     ->openUrlInNewTab()
                     ->tooltip('Download template CSV dengan delimiter comma (,)'),
             ])
@@ -171,19 +172,20 @@ class PeriodStoResource extends Resource
                         return $query
                             ->when(
                                 $data['period_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('period_sto', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('period_sto', '>=', $date),
                             )
                             ->when(
                                 $data['period_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('period_sto', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('period_sto', '<=', $date),
                             );
                     }),
                 Tables\Filters\SelectFilter::make('site')
                     ->label('Site')
-                    ->options(fn (): array => PeriodSto::distinct()->pluck('site', 'site')->toArray())
+                    ->options(fn(): array => PeriodSto::distinct()->pluck('site', 'site')->toArray())
                     ->searchable(),
             ])
             ->actions([
+
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

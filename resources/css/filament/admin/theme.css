@@ -1,3 +1,131 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+/* @source '../../../../vendor/guava/filament-modal-relation-managers/resources*'; */
 
 @config 'tailwind.config.js';
+
+/* Sticky Table Header CSS */
+.fi-ta-header-cell {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+    backdrop-filter: blur(8px);
+}
+
+/* Dark mode support */
+.dark .fi-ta-header-cell {
+    background-color: rgb(17 24 39);
+    border-bottom-color: rgb(55 65 81);
+}
+
+/* Table container styling for better scrolling */
+.fi-ta-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* Custom scrollbar styling */
+.fi-ta-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.fi-ta-content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.fi-ta-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.fi-ta-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark .fi-ta-content::-webkit-scrollbar-track {
+    background: rgb(31 41 55);
+}
+
+.dark .fi-ta-content::-webkit-scrollbar-thumb {
+    background: rgb(75 85 99);
+}
+
+.dark .fi-ta-content::-webkit-scrollbar-thumb:hover {
+    background: rgb(107 114 128);
+}
+
+/* Responsive table columns for modal */
+.fi-modal .fi-ta {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.fi-modal .fi-ta-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive column widths */
+.fi-modal .fi-ta-header-cell:nth-child(1),
+.fi-modal .fi-ta-cell:nth-child(1) {
+    width: 8%; /* Model */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(2),
+.fi-modal .fi-ta-cell:nth-child(2) {
+    width: 12%; /* Image */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(3),
+.fi-modal .fi-ta-cell:nth-child(3) {
+    width: 25%; /* Part Name */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(4),
+.fi-modal .fi-ta-cell:nth-child(4) {
+    width: 20%; /* Part Number */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(5),
+.fi-modal .fi-ta-cell:nth-child(5) {
+    width: 10%; /* Total On Hand */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(6),
+.fi-modal .fi-ta-cell:nth-child(6) {
+    width: 8%; /* Storage */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(7),
+.fi-modal .fi-ta-cell:nth-child(7) {
+    width: 8%; /* WIP */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(8),
+.fi-modal .fi-ta-cell:nth-child(8) {
+    width: 8%; /* NG */
+}
+
+.fi-modal .fi-ta-header-cell:nth-child(9),
+.fi-modal .fi-ta-cell:nth-child(9) {
+    width: 8%; /* Total */
+}
+
+/* Remove horizontal scrollbar */
+.fi-modal .fi-ta-content {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Ensure input fields fit within cells */
+.fi-modal .fi-ta-cell input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}

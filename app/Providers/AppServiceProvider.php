@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Filament\Tables\Table;
+use App\Models\LineSto;
+use App\Models\LineStoDetail;
+use App\Observers\LineStoObserver;
+use App\Observers\LineStoDetailObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +28,9 @@ class AppServiceProvider extends ServiceProvider
         Table::configureUsing(function (Table $table) {
             $table->recordClasses('record-row');
         });
+        
+        // Register observers
+        LineSto::observe(LineStoObserver::class);
+        LineStoDetail::observe(LineStoDetailObserver::class);
     }
 }
