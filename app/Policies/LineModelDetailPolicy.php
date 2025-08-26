@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\StockTaking;
+use App\Models\LineModelDetail;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class StockTakingPolicy
+class LineModelDetailPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class StockTakingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_stock::taking');
+        return $user->can('view_any_line::model::detail');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, StockTaking $stockTaking): bool
+    public function view(User $user, LineModelDetail $lineModelDetail): bool
     {
-        return $user->can('view_stock::taking');
+        return $user->can('view_line::model::detail');
     }
 
     /**
@@ -31,23 +31,23 @@ class StockTakingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_stock::taking');
+        return $user->can('create_line::model::detail');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, StockTaking $stockTaking): bool
+    public function update(User $user, LineModelDetail $lineModelDetail): bool
     {
-        return $user->can('update_stock::taking');
+        return $user->can('update_line::model::detail');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, StockTaking $stockTaking): bool
+    public function delete(User $user, LineModelDetail $lineModelDetail): bool
     {
-        return $user->can('delete_stock::taking');
+        return $user->can('delete_line::model::detail');
     }
 
     /**
@@ -55,15 +55,15 @@ class StockTakingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock::taking');
+        return $user->can('delete_any_line::model::detail');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, StockTaking $stockTaking): bool
+    public function forceDelete(User $user, LineModelDetail $lineModelDetail): bool
     {
-        return $user->can('force_delete_stock::taking');
+        return $user->can('force_delete_line::model::detail');
     }
 
     /**
@@ -71,15 +71,15 @@ class StockTakingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stock::taking');
+        return $user->can('force_delete_any_line::model::detail');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, StockTaking $stockTaking): bool
+    public function restore(User $user, LineModelDetail $lineModelDetail): bool
     {
-        return $user->can('restore_stock::taking');
+        return $user->can('restore_line::model::detail');
     }
 
     /**
@@ -87,15 +87,15 @@ class StockTakingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stock::taking');
+        return $user->can('restore_any_line::model::detail');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, StockTaking $stockTaking): bool
+    public function replicate(User $user, LineModelDetail $lineModelDetail): bool
     {
-        return $user->can('replicate_stock::taking');
+        return $user->can('replicate_line::model::detail');
     }
 
     /**
@@ -103,6 +103,6 @@ class StockTakingPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_stock::taking');
+        return $user->can('reorder_line::model::detail');
     }
 }

@@ -72,6 +72,73 @@ class PermissionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('bulkEditRoles')
+                        ->label('Edit Roles')
+                        ->icon('heroicon-o-pencil-square')
+                        ->color('warning')
+                        ->form([
+                            Forms\Components\Select::make('roles')
+                                ->label('Roles')
+                                ->multiple()
+                                ->relationship('roles', 'name')
+                                ->preload()
+                                ->searchable()
+                                ->placeholder('Select roles to assign')
+                                ->helperText('Leave empty to remove from all roles, or select specific roles to assign.'),
+                            Forms\Components\Radio::make('action_type')
+                                ->label('Action Type')
+                                ->options([
+                                    'replace' => 'Replace all roles',
+                                    'add' => 'Add to existing roles',
+                                    'remove' => 'Remove from selected roles',
+                                ])
+                                ->default('replace')
+                                ->required()
+                                ->descriptions([
+                                    'replace' => 'Replace all current roles with selected ones',
+                                    'add' => 'Add selected roles to existing ones',
+                                    'remove' => 'Remove from selected roles',
+                                ])
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
+                            $roles = $data['roles'] ?? [];
+                            $actionType = $data['action_type'];
+                            
+                            foreach ($records as $permission) {
+                                switch ($actionType) {
+                                    case 'replace':
+                                        $permission->syncRoles($roles);
+                                        break;
+                                    case 'add':
+                                        foreach ($roles as $roleId) {
+                                            $role = Role::find($roleId);
+                                            if ($role) {
+                                                $role->givePermissionTo($permission);
+                                            }
+                                        }
+                                        break;
+                                    case 'remove':
+                                        foreach ($roles as $roleId) {
+                                            $role = Role::find($roleId);
+                                            if ($role) {
+                                                $role->revokePermissionTo($permission);
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title('Roles updated successfully')
+                                ->body('Roles have been updated for ' . $records->count() . ' permission(s).')
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Bulk Edit Permission Roles')
+                        ->modalDescription('Update roles for selected permissions. Choose the action type and select roles.')
+                        ->modalSubmitActionLabel('Update Roles')
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

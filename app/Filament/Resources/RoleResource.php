@@ -68,6 +68,63 @@ class RoleResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('bulkEditPermissions')
+                        ->label('Edit Permissions')
+                        ->icon('heroicon-o-pencil-square')
+                        ->color('warning')
+                        ->form([
+                            Forms\Components\Select::make('permissions')
+                                ->label('Permissions')
+                                ->multiple()
+                                ->relationship('permissions', 'name')
+                                ->preload()
+                                ->searchable()
+                                ->placeholder('Select permissions to assign')
+                                ->helperText('Leave empty to remove all permissions, or select specific permissions to assign.'),
+                            Forms\Components\Radio::make('action_type')
+                                ->label('Action Type')
+                                ->options([
+                                    'replace' => 'Replace all permissions',
+                                    'add' => 'Add to existing permissions',
+                                    'remove' => 'Remove selected permissions',
+                                ])
+                                ->default('replace')
+                                ->required()
+                                ->descriptions([
+                                    'replace' => 'Replace all current permissions with selected ones',
+                                    'add' => 'Add selected permissions to existing ones',
+                                    'remove' => 'Remove selected permissions from existing ones',
+                                ])
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
+                            $permissions = $data['permissions'] ?? [];
+                            $actionType = $data['action_type'];
+                            
+                            foreach ($records as $role) {
+                                switch ($actionType) {
+                                    case 'replace':
+                                        $role->syncPermissions($permissions);
+                                        break;
+                                    case 'add':
+                                        $role->givePermissionTo($permissions);
+                                        break;
+                                    case 'remove':
+                                        $role->revokePermissionTo($permissions);
+                                        break;
+                                }
+                            }
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title('Permissions updated successfully')
+                                ->body('Permissions have been updated for ' . $records->count() . ' role(s).')
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Bulk Edit Role Permissions')
+                        ->modalDescription('Update permissions for selected roles. Choose the action type and select permissions.')
+                        ->modalSubmitActionLabel('Update Permissions')
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
