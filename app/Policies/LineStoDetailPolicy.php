@@ -39,7 +39,13 @@ class LineStoDetailPolicy
      */
     public function update(User $user, LineStoDetail $lineStoDetail): bool
     {
-        return $user->can('update_line::sto::detail');
+        // Check if user has permission and is the creator of parent LineSto or has leader role
+        if (!$user->can('update_line::sto::detail')) {
+            return false;
+        }
+        
+        // Allow if user is the creator of parent LineSto or has leader role
+        return $lineStoDetail->lineSto->created_by === $user->name || $user->hasRole('leader');
     }
 
     /**
@@ -47,7 +53,13 @@ class LineStoDetailPolicy
      */
     public function delete(User $user, LineStoDetail $lineStoDetail): bool
     {
-        return $user->can('delete_line::sto::detail');
+        // Check if user has permission and is the creator of parent LineSto or has leader role
+        if (!$user->can('delete_line::sto::detail')) {
+            return false;
+        }
+        
+        // Allow if user is the creator of parent LineSto or has leader role
+        return $lineStoDetail->lineSto->created_by === $user->name || $user->hasRole('leader');
     }
 
     /**

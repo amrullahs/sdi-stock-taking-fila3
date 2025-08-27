@@ -242,7 +242,7 @@ class LineStoResource extends Resource
                     ->icon('heroicon-o-clipboard-document-list')
                     ->color('info')
                     ->modalHeading(false)
-                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                    ->modalWidth(MaxWidth::Screen)
                     ->relationManager(RelationManagers\LineStoDetailsRelationManager::make()),
                 Tables\Actions\EditAction::make(),
             ])

@@ -5,9 +5,21 @@ namespace App\Observers;
 use App\Models\LineSto;
 use App\Models\LineStoDetail;
 use App\Models\LineModelDetail;
+use Illuminate\Support\Facades\Auth;
 
 class LineStoObserver
 {
+    /**
+     * Handle the LineSto "creating" event.
+     */
+    public function creating(LineSto $lineSto): void
+    {
+        // Auto-set created_by dengan nama user yang sedang login
+        if (Auth::check() && empty($lineSto->created_by)) {
+            $lineSto->created_by = Auth::user()->name;
+        }
+    }
+
     /**
      * Handle the LineSto "created" event.
      */
@@ -21,7 +33,7 @@ class LineStoObserver
                 'period_id' => $lineSto->period_id,
                 'line_sto_id' => $lineSto->id,
                 'line_model_detail_id' => $lineModelDetail->id,
-                'total_count' => 0,
+                // Semua count fields akan null secara default
             ]);
         }
     }

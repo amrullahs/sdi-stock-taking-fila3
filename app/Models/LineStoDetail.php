@@ -66,6 +66,15 @@ class LineStoDetail extends Model
     // Accessor untuk total count otomatis
     public function getTotalCountAttribute($value)
     {
-        return $this->storage_count + $this->wip_count + $this->ng_count;
+        $storage = $this->storage_count ?? 0;
+        $wip = $this->wip_count ?? 0;
+        $ng = $this->ng_count ?? 0;
+        
+        // Jika semua nilai null, return null
+        if (is_null($this->storage_count) && is_null($this->wip_count) && is_null($this->ng_count)) {
+            return null;
+        }
+        
+        return $storage + $wip + $ng;
     }
 }

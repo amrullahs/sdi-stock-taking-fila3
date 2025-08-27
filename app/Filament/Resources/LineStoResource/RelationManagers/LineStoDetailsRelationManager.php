@@ -28,21 +28,18 @@ class LineStoDetailsRelationManager extends RelationManager
                 // ->getOptionLabelFromRecordUsing(fn($record) => $record->part_name . ' - ' . $record->part_number),
                 Forms\Components\TextInput::make('storage_count')
                     ->label('Storage Count')
-                    ->required()
                     ->numeric()
-                    ->default(0)
+                    ->placeholder('Enter storage count')
                     ->minValue(0),
                 Forms\Components\TextInput::make('wip_count')
                     ->label('WIP Count')
-                    ->required()
                     ->numeric()
-                    ->default(0)
+                    ->placeholder('Enter WIP count')
                     ->minValue(0),
                 Forms\Components\TextInput::make('ng_count')
                     ->label('NG Count')
-                    ->required()
                     ->numeric()
-                    ->default(0)
+                    ->placeholder('Enter NG count')
                     ->minValue(0),
             ]);
     }
@@ -107,12 +104,12 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->searchable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('lineModelDetail.part_number')
-                    ->label('Part Number')
+                    ->label('Part Nbr')
                     ->sortable()
                     ->searchable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('total_on_hand')
-                    ->label('Total On Hand')
+                    ->label('OnHand')
                     ->numeric()
                     ->sortable()
                     ->badge()
@@ -121,10 +118,10 @@ class LineStoDetailsRelationManager extends RelationManager
                         return $record->total_on_hand;
                     }),
                 Tables\Columns\TextInputColumn::make('storage_count')
-                    ->label('Storage Count')
+                    ->label('Storage')
                     ->view('filament.tables.columns.number-input-with-buttons')
                     ->viewData(['columnName' => 'storage_count'])
-                    ->width('120px')
+                    ->width('100px')
                     ->extraAttributes(['class' => 'text-center']),
                 Tables\Columns\TextInputColumn::make('wip_count')
                     ->label('WIP')
@@ -160,9 +157,9 @@ class LineStoDetailsRelationManager extends RelationManager
                         return $query
                             ->when(
                                 $data['qad_number'],
-                                fn (Builder $query, $qadNumber): Builder => $query->whereHas(
+                                fn(Builder $query, $qadNumber): Builder => $query->whereHas(
                                     'lineModelDetail',
-                                    fn (Builder $query): Builder => $query->where('qad_number', 'like', "%{$qadNumber}%")
+                                    fn(Builder $query): Builder => $query->where('qad_number', 'like', "%{$qadNumber}%")
                                 )
                             );
                     })
@@ -189,7 +186,7 @@ class LineStoDetailsRelationManager extends RelationManager
     {
         try {
             $record = $this->getRelationship()->find($recordId);
-            
+
             if (!$record) {
                 return [
                     'success' => false,

@@ -17,6 +17,7 @@ class RolePermissionSeeder extends Seeder
         // Create roles
         $adminRole = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'web']);
         $stockTakerRole = Role::firstOrCreate(['name' => 'Stock Taker', 'guard_name' => 'web']);
+        $leaderRole = Role::firstOrCreate(['name' => 'leader', 'guard_name' => 'web']);
         $viewerRole = Role::firstOrCreate(['name' => 'Viewer', 'guard_name' => 'web']);
 
         // Get all permissions
@@ -49,9 +50,23 @@ class RolePermissionSeeder extends Seeder
         ])->get();
         $viewerRole->syncPermissions($viewerPermissions);
         
+        // Leader gets full permissions for LineSto and LineStoDetail management
+        $leaderPermissions = Permission::where('name', 'like', '%line::sto%')
+            ->orWhere('name', 'like', '%line::sto::detail%')
+            ->orWhereIn('name', [
+                'view_user',
+                'view_any_user',
+                'view_role',
+                'view_any_role',
+                'view_permission',
+                'view_any_permission',
+            ])->get();
+        $leaderRole->syncPermissions($leaderPermissions);
+        
         $this->command->info('Roles and permissions created successfully!');
         $this->command->info('Super Admin role has ' . $adminRole->permissions->count() . ' permissions');
         $this->command->info('Stock Taker role has ' . $stockTakerRole->permissions->count() . ' permissions');
+        $this->command->info('Leader role has ' . $leaderRole->permissions->count() . ' permissions');
         $this->command->info('Viewer role has ' . $viewerRole->permissions->count() . ' permissions');
     }
 }

@@ -46,6 +46,14 @@ class LineSto extends Model
     }
 
     /**
+     * Get the user who created this LineSto
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by', 'name');
+    }
+
+    /**
      * Get the line STO details for the LineSto
      */
     public function lineStoDetails(): HasMany
