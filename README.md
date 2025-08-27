@@ -20,7 +20,16 @@ Aplikasi internal stock taking menggunakan Laravel 11 dengan Filament 3.3 untuk 
 - **Authorization**: Spatie Permission + Filament Shield
 - **UI Components**: Tailwind CSS
 
-## Instalasi Production Server
+## Key Packages
+
+- **bezhansalleh/filament-shield**: Role & Permission management
+- **spatie/laravel-permission**: Permission system
+- **guava/filament-modal-relation-managers**: Modal relation managers
+- **awcodes/filament-sticky-header**: Sticky header untuk tables
+- **maatwebsite/excel**: Import/Export Excel/CSV
+- **filament/filament**: Admin panel framework
+
+## Instalasi
 
 ### Prerequisites
 
@@ -28,8 +37,43 @@ Aplikasi internal stock taking menggunakan Laravel 11 dengan Filament 3.3 untuk 
 - Composer 2.x
 - MySQL 8.0 atau lebih tinggi
 - Node.js 18+ dan NPM
-- Web server (Apache/Nginx)
+- Web server (Apache/Nginx untuk production)
 - Git
+
+## Instalasi Development
+
+### Quick Start (Development)
+
+```bash
+# Clone repository
+git clone https://github.com/your-repo/sdi-stock-taking-fila3.git
+cd sdi-stock-taking-fila3
+
+# Install dependencies
+composer install
+npm install
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Edit .env untuk database development
+# DB_DATABASE=sdi_stock_taking_dev
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Setup database
+php artisan migrate:fresh --seed
+php artisan shield:auto-generate --force
+php artisan db:seed --class=SuperAdminSeeder
+php artisan cache:clear
+
+# Start development server
+php artisan serve
+# Akses: http://localhost:8000/admin
+```
+
+## Instalasi Production Server
 
 ### Step 1: Clone Repository
 
@@ -114,8 +158,14 @@ EXIT;
 # Run migrations and seeders
 php artisan migrate:fresh --seed
 
-# Generate Filament Shield permissions
+# Generate Filament Shield permissions (WAJIB setelah migrate:fresh)
 php artisan shield:auto-generate --force
+
+# Re-seed Super Admin untuk assign permissions yang baru dibuat
+php artisan db:seed --class=SuperAdminSeeder
+
+# Clear cache untuk apply perubahan permissions
+php artisan cache:clear
 ```
 
 ### Step 5: Storage & Cache Optimization
@@ -229,12 +279,45 @@ Isi file logrotate:
 
 Setelah instalasi, login dengan:
 
-- **URL**: `https://your-domain.com/admin`
+- **URL**: `https://your-domain.com/admin` (production) atau `http://localhost:8000/admin` (development)
 - **Email**: `amrullah@sankei-dharma.com`
 - **Password**: `password`
-- **Role**: Super Admin
+- **Role**: Super Admin (168+ permissions)
 
 ⚠️ **PENTING**: Segera ganti password default setelah login pertama!
+
+## Struktur Database
+
+### Master Tables
+- `m_line` - Data line produksi
+- `m_model_structure` - Struktur model produk
+- `m_model_structure_detail` - Detail struktur model
+- `m_line_model_detail` - Relasi line dengan model detail
+- `index_product_structure` - Struktur produk utama
+
+### Transaction Tables
+- `t_period_sto` - Periode stock taking
+- `t_line_sto` - Line stock taking per periode
+- `t_line_sto_detail` - Detail stock taking per line
+- `t_stock_on_hand` - Data stock on hand
+- `t_stock_taking` - Header stock taking
+- `t_stock_taking_detail` - Detail stock taking
+
+### System Tables
+- `users` - User management
+- `roles` - Role management (Spatie Permission)
+- `permissions` - Permission management (Spatie Permission)
+- `model_has_roles` - User-role assignment
+- `role_has_permissions` - Role-permission assignment
+
+## Available Seeders
+
+- **UserSeeder**: Membuat user dummy untuk testing
+- **RolePermissionSeeder**: Membuat roles (super-admin, Stock Taker, Viewer)
+- **SuperAdminSeeder**: Membuat user super-admin dengan semua permissions
+- **ProductStructureSeeder**: Seeder master data produk (opsional)
+- **ModelStructureSeeder**: Seeder master data model (opsional)
+- **ModelStructureDetailSeeder**: Seeder detail model (opsional)
 
 ## Import Master Data
 
@@ -272,6 +355,28 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 ```
+
+### Filament Shield Issues
+
+**Problem**: User super-admin hanya bisa akses "User Management" setelah fresh install
+
+**Solution**: Pastikan urutan perintah berikut dijalankan dengan benar:
+
+```bash
+# 1. Fresh migration dan seeding
+php artisan migrate:fresh --seed
+
+# 2. Generate permissions untuk semua resources
+php artisan shield:auto-generate --force
+
+# 3. Re-assign permissions ke super-admin
+php artisan db:seed --class=SuperAdminSeeder
+
+# 4. Clear cache
+php artisan cache:clear
+```
+
+**Verifikasi**: User super-admin harus memiliki 168+ permissions setelah proses di atas.
 
 ### Database Connection Error
 

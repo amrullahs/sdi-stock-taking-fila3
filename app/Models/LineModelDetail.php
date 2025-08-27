@@ -12,6 +12,7 @@ class LineModelDetail extends Model
     protected $fillable = [
         'line_id',
         'model_id',
+        'type',
         'qad_number',
         'part_name',
         'part_number',

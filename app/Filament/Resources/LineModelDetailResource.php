@@ -43,6 +43,10 @@ class LineModelDetailResource extends Resource
                     ->required()
                     ->searchable(),
                     
+                Forms\Components\TextInput::make('type')
+                    ->label('Type')
+                    ->maxLength(255),
+                    
                 Forms\Components\TextInput::make('qad_number')
                     ->label('QAD Number')
                     ->required()
@@ -109,6 +113,12 @@ class LineModelDetailResource extends Resource
                     
                 Tables\Columns\TextColumn::make('model.model')
                     ->label('Model')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                    
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
