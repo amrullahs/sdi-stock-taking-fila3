@@ -15,7 +15,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Create roles
-        $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $adminRole = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'web']);
         $stockTakerRole = Role::firstOrCreate(['name' => 'Stock Taker', 'guard_name' => 'web']);
         $viewerRole = Role::firstOrCreate(['name' => 'Viewer', 'guard_name' => 'web']);
 
@@ -50,7 +50,7 @@ class RolePermissionSeeder extends Seeder
         $viewerRole->syncPermissions($viewerPermissions);
         
         $this->command->info('Roles and permissions created successfully!');
-        $this->command->info('Admin role has ' . $adminRole->permissions->count() . ' permissions');
+        $this->command->info('Super Admin role has ' . $adminRole->permissions->count() . ' permissions');
         $this->command->info('Stock Taker role has ' . $stockTakerRole->permissions->count() . ' permissions');
         $this->command->info('Viewer role has ' . $viewerRole->permissions->count() . ' permissions');
     }
