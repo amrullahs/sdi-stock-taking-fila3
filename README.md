@@ -1,67 +1,294 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SDI Stock Taking Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi internal stock taking menggunakan Laravel 11 dengan Filament 3.3 untuk PT Sankei Dharma Indonesia.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Dashboard Admin**: Interface modern dengan Filament 3.3
+- **Master Data Management**: Line, Product Structure, Model Structure
+- **Stock Taking Process**: Period STO, Line STO, Stock Taking Detail
+- **User Management**: Role-based access dengan Filament Shield
+- **Import/Export**: CSV import untuk master data
+- **Modal Relation Manager**: Interface yang user-friendly
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 11
+- **Frontend**: Filament 3.3
+- **Database**: MySQL 8.0+
+- **Authentication**: Laravel Sanctum
+- **Authorization**: Spatie Permission + Filament Shield
+- **UI Components**: Tailwind CSS
 
-## Learning Laravel
+## Instalasi Production Server
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Prerequisites
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP 8.2 atau lebih tinggi
+- Composer 2.x
+- MySQL 8.0 atau lebih tinggi
+- Node.js 18+ dan NPM
+- Web server (Apache/Nginx)
+- Git
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Step 1: Clone Repository
 
-## Laravel Sponsors
+```bash
+# Clone repository
+git clone https://github.com/your-repo/sdi-stock-taking-fila3.git
+cd sdi-stock-taking-fila3
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Set permissions (Linux/Unix)
+sudo chown -R www-data:www-data .
+sudo chmod -R 755 .
+sudo chmod -R 775 storage bootstrap/cache
+```
 
-### Premium Partners
+### Step 2: Install Dependencies
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+# Install PHP dependencies
+composer install --optimize-autoloader --no-dev
 
-## Contributing
+# Install Node.js dependencies
+npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Build assets untuk production
+npm run build
+```
 
-## Code of Conduct
+### Step 3: Environment Configuration
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Copy environment file
+cp .env.example .env
 
-## Security Vulnerabilities
+# Generate application key
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Edit file `.env` dengan konfigurasi production:
+
+```env
+# Application
+APP_NAME="SDI Stock Taking"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sdi_stock_taking
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+
+# Cache & Session
+CACHE_DRIVER=file
+SESSION_DRIVER=file
+QUEUE_CONNECTION=sync
+
+# Mail (optional)
+MAIL_MAILER=smtp
+MAIL_HOST=your-smtp-host
+MAIL_PORT=587
+MAIL_USERNAME=your-email
+MAIL_PASSWORD=your-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@your-domain.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+### Step 4: Database Setup
+
+```bash
+# Create database (MySQL)
+mysql -u root -p
+CREATE DATABASE sdi_stock_taking CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'sdi_user'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT ALL PRIVILEGES ON sdi_stock_taking.* TO 'sdi_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+# Run migrations and seeders
+php artisan migrate:fresh --seed
+
+# Generate Filament Shield permissions
+php artisan shield:auto-generate --force
+```
+
+### Step 5: Storage & Cache Optimization
+
+```bash
+# Create storage link
+php artisan storage:link
+
+# Clear and cache configurations
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+
+# Optimize autoloader
+composer dump-autoload --optimize
+```
+
+### Step 6: Web Server Configuration
+
+#### Apache (.htaccess)
+
+Pastikan mod_rewrite aktif dan DocumentRoot mengarah ke folder `public/`:
+
+```apache
+<VirtualHost *:80>
+    ServerName your-domain.com
+    DocumentRoot /path/to/sdi-stock-taking-fila3/public
+    
+    <Directory /path/to/sdi-stock-taking-fila3/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+    
+    ErrorLog ${APACHE_LOG_DIR}/sdi-stock-taking_error.log
+    CustomLog ${APACHE_LOG_DIR}/sdi-stock-taking_access.log combined
+</VirtualHost>
+```
+
+#### Nginx
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+    root /path/to/sdi-stock-taking-fila3/public;
+    
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+    
+    index index.php;
+    
+    charset utf-8;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+    
+    error_page 404 /index.php;
+    
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+    
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+### Step 7: SSL Certificate (Recommended)
+
+```bash
+# Install Certbot (Ubuntu/Debian)
+sudo apt install certbot python3-certbot-apache
+
+# Generate SSL certificate
+sudo certbot --apache -d your-domain.com
+
+# Auto-renewal
+sudo crontab -e
+# Add: 0 12 * * * /usr/bin/certbot renew --quiet
+```
+
+### Step 8: Monitoring & Maintenance
+
+```bash
+# Setup log rotation
+sudo nano /etc/logrotate.d/laravel
+```
+
+Isi file logrotate:
+
+```
+/path/to/sdi-stock-taking-fila3/storage/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    notifempty
+    create 0644 www-data www-data
+}
+```
+
+## Default User
+
+Setelah instalasi, login dengan:
+
+- **URL**: `https://your-domain.com/admin`
+- **Email**: `amrullah@sankei-dharma.com`
+- **Password**: `password`
+- **Role**: Super Admin
+
+⚠️ **PENTING**: Segera ganti password default setelah login pertama!
+
+## Import Master Data
+
+Setelah instalasi, import master data melalui admin panel:
+
+1. **Product Structure**: Import dari CSV
+2. **Model Structure**: Import dari CSV
+3. **Line Model Detail**: Import dari CSV
+4. **Stock On Hand**: Import dari CSV
+
+## Backup Database
+
+```bash
+# Backup harian
+mysqldump -u sdi_user -p sdi_stock_taking > backup_$(date +%Y%m%d).sql
+
+# Restore
+mysql -u sdi_user -p sdi_stock_taking < backup_20250120.sql
+```
+
+## Troubleshooting
+
+### Permission Issues
+
+```bash
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+```
+
+### Clear Cache
+
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+### Database Connection Error
+
+1. Periksa kredensial database di `.env`
+2. Pastikan MySQL service berjalan
+3. Test koneksi: `php artisan tinker` → `DB::connection()->getPdo()`
+
+### 500 Internal Server Error
+
+1. Periksa log: `tail -f storage/logs/laravel.log`
+2. Pastikan permissions folder storage dan bootstrap/cache
+3. Periksa konfigurasi web server
+
+## Support
+
+Untuk bantuan teknis, hubungi tim IT PT Sankei Dharma Indonesia.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# sdi-stock-taking-fila3" 
+Proprietari - PT Sankei Dharma Indonesia

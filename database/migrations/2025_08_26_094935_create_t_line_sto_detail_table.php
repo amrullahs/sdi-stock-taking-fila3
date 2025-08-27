@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('period_id');
             $table->unsignedBigInteger('line_sto_id');
+            $table->unsignedBigInteger('line_id')->nullable();
             $table->unsignedBigInteger('line_model_detail_id');
             $table->integer('storage_count')->default(0);
             $table->integer('wip_count')->default(0);
