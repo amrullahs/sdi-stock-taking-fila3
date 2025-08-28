@@ -23,6 +23,7 @@ class LineSto extends Model
         'sto_submit_at',
         'sto_update_at',
         'status',
+        'progress',
     ];
     
     protected $casts = [

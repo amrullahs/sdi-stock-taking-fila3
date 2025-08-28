@@ -52,6 +52,14 @@ class LineStoDetailObserver
     }
 
     /**
+     * Handle the LineStoDetail "deleted" event.
+     */
+    public function deleted(LineStoDetail $lineStoDetail): void
+    {
+        $this->updateLineStoProgress($lineStoDetail);
+    }
+
+    /**
      * Update LineSto status and timestamps when count fields change
      */
     private function updateLineStoStatus(LineStoDetail $lineStoDetail): void
@@ -80,9 +88,29 @@ class LineStoDetailObserver
                 // Always update sto_update_at
                 $updateData['sto_update_at'] = now();
                 
+                // Calculate and update progress
+                $updateData['progress'] = $lineSto->progress;
+                
                 if (!empty($updateData)) {
                     $lineSto->update($updateData);
                 }
+            }
+        }
+    }
+
+    /**
+     * Update LineSto progress when LineStoDetail is deleted
+     */
+    private function updateLineStoProgress(LineStoDetail $lineStoDetail): void
+    {
+        if ($lineStoDetail->line_sto_id) {
+            $lineSto = LineSto::find($lineStoDetail->line_sto_id);
+            
+            if ($lineSto) {
+                $lineSto->update([
+                    'progress' => $lineSto->progress,
+                    'sto_update_at' => now()
+                ]);
             }
         }
     }

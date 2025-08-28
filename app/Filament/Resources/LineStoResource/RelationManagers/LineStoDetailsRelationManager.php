@@ -8,7 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Notifications\Notification;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
@@ -136,12 +136,10 @@ class LineStoDetailsRelationManager extends RelationManager
                     ])
                     ->columnSpan(1)
                     ->afterStateUpdated(function ($state, $record) {
-                        $record->update(['storage_count' => (int) $state]);
-
-                        Notification::make()
-                            ->title('Storage count updated')
-                            ->success()
-                            ->send();
+                        $record->update([
+                            'storage_count' => (int) $state,
+                            'total_count' => (int) $state + $record->wip_count + $record->ng_count
+                        ]);
                     }),
 
                 Tables\Columns\TextInputColumn::make('wip_count')
@@ -157,12 +155,10 @@ class LineStoDetailsRelationManager extends RelationManager
                         'step' => '1'
                     ])
                     ->afterStateUpdated(function ($state, $record) {
-                        $record->update(['wip_count' => (int) $state]);
-
-                        Notification::make()
-                            ->title('WIP count updated')
-                            ->success()
-                            ->send();
+                        $record->update([
+                            'wip_count' => (int) $state,
+                            'total_count' => $record->storage_count + (int) $state + $record->ng_count
+                        ]);
                     }),
 
                 Tables\Columns\TextInputColumn::make('ng_count')
@@ -177,18 +173,27 @@ class LineStoDetailsRelationManager extends RelationManager
                         'step' => '1'
                     ])
                     ->afterStateUpdated(function ($state, $record) {
-                        $record->update(['ng_count' => (int) $state]);
-
-                        Notification::make()
-                            ->title('NG count updated')
-                            ->success()
-                            ->send();
+                        $record->update([
+                            'ng_count' => (int) $state,
+                            'total_count' => $record->storage_count + $record->wip_count + (int) $state
+                        ]);
                     }),
                 Tables\Columns\TextColumn::make('total_count')
                     ->label('Total')
                     ->numeric()
                     ->sortable()
                     ->getStateUsing(fn($record) => $record->storage_count + $record->wip_count + $record->ng_count),
+                Tables\Columns\TextInputColumn::make('remark')
+                    ->label('Remark')
+                    ->type('textarea')
+                    ->placeholder('Add remark...')
+                    ->extraInputAttributes([
+                        'rows' => '2',
+                        'class' => 'resize-none'
+                    ])
+                    ->afterStateUpdated(function ($state, $record) {
+                        $record->update(['remark' => $state]);
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('lineModelDetail.model_id')

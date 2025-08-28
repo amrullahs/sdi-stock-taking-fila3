@@ -21,6 +21,7 @@ class LineStoDetail extends Model
         'wip_count',
         'ng_count',
         'total_count',
+        'remark',
     ];
 
     protected $casts = [

@@ -234,3 +234,11 @@
 .dark .fi-modal .fi-ac-btn-action[x-on\:click="close()"]:hover {
     background: rgba(153, 27, 27, 0.95) !important;
 }
+
+/* Modal margin 5px from screen edges */
+.fi-modal-window {
+    margin-left: 10px !important;
+    margin-right: 10px !important;
+    max-width: calc(100vw - 10px) !important;
+    width: calc(100vw - 10px) !important;
+}
