@@ -192,3 +192,45 @@
         max-width: 180px !important;
     }
 }
+
+/* Floating sticky close button for modal */
+.fi-modal .fi-ac-btn-action[x-on\:click="close()"] {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+    background: rgba(239, 68, 68, 0.9) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.2s ease !important;
+}
+
+.fi-modal .fi-ac-btn-action[x-on\:click="close()"]:hover {
+    background: rgba(220, 38, 38, 0.95) !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Ensure the close button text/icon is centered */
+.fi-modal .fi-ac-btn-action[x-on\:click="close()"] .fi-btn-label {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+/* Dark mode support for floating close button */
+.dark .fi-modal .fi-ac-btn-action[x-on\:click="close()"] {
+    background: rgba(185, 28, 28, 0.9) !important;
+}
+
+.dark .fi-modal .fi-ac-btn-action[x-on\:click="close()"]:hover {
+    background: rgba(153, 27, 27, 0.95) !important;
+}

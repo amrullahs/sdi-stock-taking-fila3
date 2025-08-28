@@ -18,13 +18,15 @@ class LineResource extends Resource
     protected static ?string $model = Line::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
-    
+
     protected static ?string $navigationGroup = 'Master Data';
-    
+
     protected static ?string $navigationLabel = 'Line';
-    
+
+    protected static ?int $navigationSort = 0;
+
     protected static ?string $modelLabel = 'Line';
-    
+
     protected static ?string $pluralModelLabel = 'Lines';
 
     public static function form(Form $form): Form
