@@ -54,12 +54,7 @@ class LineStoResource extends Resource
                     ->required()
                     ->disabled(fn($record) => $record && $record->status === 'onprogress'),
 
-                Forms\Components\TextInput::make('created_by')
-                    ->label('Created By')
-                    ->maxLength(255)
-                    ->default(fn() => Auth::user()?->name ?? Auth::user()?->email)
-                    ->disabled()
-                    ->dehydrated(),
+                // created_by akan diisi otomatis oleh LineStoObserver
 
                 Forms\Components\TextInput::make('site')
                     ->label('Site')

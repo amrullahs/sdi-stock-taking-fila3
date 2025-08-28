@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PeriodStoResource\RelationManagers;
 
 use App\Models\Line;
 use App\Models\LineSto;
+use App\Exports\LineStoDetailExport;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -12,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LineStosRelationManager extends RelationManager
 {
@@ -30,12 +32,7 @@ class LineStosRelationManager extends RelationManager
                     ->required()
                     ->disabled(fn($record) => $record && $record->status === 'onprogress'),
 
-                Forms\Components\TextInput::make('created_by')
-                    ->label('Created By')
-                    ->maxLength(255)
-                    ->default(fn() => Auth::user()?->name ?? Auth::user()?->email)
-                    ->disabled()
-                    ->dehydrated(),
+                // created_by akan diisi otomatis oleh LineStoObserver
 
                 Forms\Components\DateTimePicker::make('sto_start_at')
                     ->label('Start STO At')
@@ -122,6 +119,19 @@ class LineStosRelationManager extends RelationManager
                     ]),
             ])
             ->headerActions([
+                Tables\Actions\Action::make('export')
+                    ->label('Export to Excel')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->action(function () {
+                        // Get period ID from the owner record
+                        $periodId = $this->ownerRecord->id;
+                        
+                        $filename = 'line_sto_detail_export_period_' . $periodId . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+                        
+                        return Excel::download(new LineStoDetailExport($periodId, null), $filename);
+                    })
+                    ->tooltip('Export Line STO Detail data to Excel file')
+                    ->color('success'),
                 // Tables\Actions\CreateAction::make()
                 //     ->mutateFormDataUsing(function (array $data): array {
                 //         // Validasi kombinasi period_id dan line_id yang unik
