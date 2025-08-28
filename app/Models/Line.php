@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Line extends Model
 {
     protected $table = 'm_line';
-    
+
     protected $fillable = [
         'line',
         'leader',
     ];
-    
+
     /**
      * Get the line model details for this line.
      */
@@ -21,7 +21,7 @@ class Line extends Model
     {
         return $this->hasMany(LineModelDetail::class);
     }
-    
+
     /**
      * Get the line STOs for this line.
      */
