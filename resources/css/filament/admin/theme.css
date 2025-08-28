@@ -1,5 +1,5 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
-/* @source '../../../../vendor/guava/filament-modal-relation-managers/resources*'; */
+@source '../../../../vendor/guava/filament-modal-relation-managers/resources*';
 
 @config 'tailwind.config.js';
 
@@ -24,6 +24,35 @@
     max-height: 70vh;
     overflow-y: auto;
     overflow-x: auto;
+}
+
+/* Force horizontal scroll for tables */
+.fi-ta-table {
+    min-width: 100%;
+    width: max-content;
+}
+
+/* Ensure table wrapper allows horizontal scroll */
+.fi-ta-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+/* Mobile responsive horizontal scroll */
+@media (max-width: 768px) {
+    .fi-ta-content {
+        overflow-x: auto;
+        /* ← PASTIKAN auto */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fi-ta-table {
+        min-width: 800px;
+    }
+
+    /* Untuk modal di mobile */
+    .fi-modal .fi-ta-table {
+        min-width: 800px;
+    }
 }
 
 /* Custom scrollbar styling */
@@ -59,16 +88,22 @@
     background: rgb(107 114 128);
 }
 
-/* Responsive table columns for modal */
-.fi-modal .fi-ta {
-    table-layout: fixed;
-    width: 100%;
+/* Responsive table columns for modal *//* MODAL SPECIFIC FIXES */
+.fi-modal .fi-ta-content {
+    overflow-x: auto !important;
+    /* ← PASTIKAN auto */
+    overflow-y: auto;
+}
+
+.fi-modal .fi-ta-table {
+    width: auto !important;
+    table-layout: auto !important;
+    min-width: 100%;
 }
 
 .fi-modal .fi-ta-cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    min-width: max-content;
 }
 
 /* Responsive column widths */
@@ -89,44 +124,50 @@
 
 .fi-modal .fi-ta-header-cell:nth-child(4),
 .fi-modal .fi-ta-cell:nth-child(4) {
-    width: 20%; /* Part Number */
+    width: 10%; /* Total On Hand */
 }
 
 .fi-modal .fi-ta-header-cell:nth-child(5),
 .fi-modal .fi-ta-cell:nth-child(5) {
-    width: 10%; /* Total On Hand */
+    /* width: 8%; Storage */
+    /* ← PASTIKAN auto */
+width: auto;
+    /* Biarkan width natural */
 }
 
 .fi-modal .fi-ta-header-cell:nth-child(6),
-.fi-modal .fi-ta-cell:nth-child(6) {
-    width: 8%; /* Storage */
+.fi-modal .fi-ta-cell:nth-child(6) {/* width: 8%; Storage */
+    /* ← PASTIKAN auto */
+    width: auto;
+    /* Biarkan width natural */
 }
 
 .fi-modal .fi-ta-header-cell:nth-child(7),
-.fi-modal .fi-ta-cell:nth-child(7) {
-    width: 8%; /* WIP */
+.fi-modal .fi-ta-cell:nth-child(7) {/* width: 8%; Storage */
+    /* ← PASTIKAN auto */
+    width: auto;
+    /* Biarkan width natural */
 }
 
 .fi-modal .fi-ta-header-cell:nth-child(8),
 .fi-modal .fi-ta-cell:nth-child(8) {
-    width: 8%; /* NG */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(9),
-.fi-modal .fi-ta-cell:nth-child(9) {
-    width: 8%; /* Total */
+    /* width: 8%; Storage */
+    /* ← PASTIKAN auto */
+    width: auto;
+    /* Biarkan width natural */
 }
 
 /* Remove horizontal scrollbar */
 .fi-modal .fi-ta-content {
-    overflow-x: hidden;
+    overflow-x: auto !important;
+    /* ← PASTIKAN auto */
     overflow-y: auto;
 }
 
 /* Ensure input fields fit within cells */
 .fi-modal .fi-ta-cell input {
-    width: 100%;
-    max-width: 100%;
+    /* width: 100%; */
+    max-width: 80%;
     box-sizing: border-box;
 }
 

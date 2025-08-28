@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LineStoResource\RelationManagers;
 
 use App\Models\LineModelDetail;
+use Asmit\ResizedColumn\HasResizableColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 class LineStoDetailsRelationManager extends RelationManager
 {
+    use HasResizableColumn;
+
     protected static string $relationship = 'lineStoDetails';
 
     public function form(Form $form): Form
@@ -50,6 +53,7 @@ class LineStoDetailsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('lineModelDetail.part_name')
+            ->striped()
             ->columns([
                 Tables\Columns\TextColumn::make('lineModelDetail.model_id')
                     ->label('Model')
@@ -101,10 +105,10 @@ class LineStoDetailsRelationManager extends RelationManager
                         $qad = $record->lineModelDetail?->qad_number ?? '';
                         $partName = $record->lineModelDetail?->part_name ?? '';
                         $partNumber = $record->lineModelDetail?->part_number ?? '';
-                        
+
                         // Make QAD number bold
                         $qadFormatted = $qad ? '<strong>' . $qad . '</strong>' : '';
-                        
+
                         return new \Illuminate\Support\HtmlString(
                             collect([$qadFormatted, $partName, $partNumber])
                                 ->filter()
