@@ -39,7 +39,23 @@ class LineStoPolicy
      */
     public function update(User $user, LineSto $lineSto): bool
     {
-        return $user->can('update_line::sto');
+        // Super admin can update anything
+        if ($user->hasRole('super-admin')) {
+            return true;
+        }
+
+        // Check if user has basic update permission
+        if (!$user->can('update_line::sto')) {
+            return false;
+        }
+
+        // If user owns the record, they can update it (handle string/int comparison)
+        if ($lineSto->created_by == $user->id) {
+            return true;
+        }
+
+        // If user has permission to update others' records
+        return $user->can('update_others_line::sto');
     }
 
     /**
@@ -47,7 +63,23 @@ class LineStoPolicy
      */
     public function delete(User $user, LineSto $lineSto): bool
     {
-        return $user->can('delete_line::sto');
+        // Super admin can delete anything
+        if ($user->hasRole('super-admin')) {
+            return true;
+        }
+
+        // Check if user has basic delete permission
+        if (!$user->can('delete_line::sto')) {
+            return false;
+        }
+
+        // If user owns the record, they can delete it (handle string/int comparison)
+        if ($lineSto->created_by == $user->id) {
+            return true;
+        }
+
+        // If user has permission to delete others' records
+        return $user->can('delete_others_line::sto');
     }
 
     /**

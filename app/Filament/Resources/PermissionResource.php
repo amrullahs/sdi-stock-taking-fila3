@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class PermissionResource extends Resource
 {
@@ -23,6 +24,13 @@ class PermissionResource extends Resource
     protected static ?string $navigationGroup = 'User Management';
 
     protected static ?int $navigationSort = 3;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        return $user?->can('view_any_permission') ?? false;
+    }
 
     public static function form(Form $form): Form
     {
@@ -103,7 +111,7 @@ class PermissionResource extends Resource
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data) {
                             $roles = $data['roles'] ?? [];
                             $actionType = $data['action_type'];
-                            
+
                             foreach ($records as $permission) {
                                 switch ($actionType) {
                                     case 'replace':
@@ -127,7 +135,7 @@ class PermissionResource extends Resource
                                         break;
                                 }
                             }
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Roles updated successfully')
                                 ->body('Roles have been updated for ' . $records->count() . ' permission(s).')

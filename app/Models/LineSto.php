@@ -54,7 +54,7 @@ class LineSto extends Model
      */
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by', 'name');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**

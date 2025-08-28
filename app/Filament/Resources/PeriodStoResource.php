@@ -130,7 +130,7 @@ class PeriodStoResource extends Resource
                     })
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_by')
+                Tables\Columns\TextColumn::make('creator.name')
                     ->label('Created By')
                     ->searchable()
                     ->sortable(),

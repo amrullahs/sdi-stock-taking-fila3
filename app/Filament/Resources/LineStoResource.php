@@ -148,9 +148,10 @@ class LineStoResource extends Resource
                     ->searchable()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('created_by')
+                Tables\Columns\TextColumn::make('creator.name')
                     ->label('Created By')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('site')

@@ -14,9 +14,9 @@ class LineStoObserver
      */
     public function creating(LineSto $lineSto): void
     {
-        // Auto-set created_by dengan nama user yang sedang login
+        // Auto-set created_by dengan ID user yang sedang login
         if (Auth::check() && empty($lineSto->created_by)) {
-            $lineSto->created_by = Auth::user()->name;
+            $lineSto->created_by = Auth::user()->id;
         }
     }
 

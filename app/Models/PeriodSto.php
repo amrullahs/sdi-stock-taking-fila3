@@ -28,14 +28,14 @@ class PeriodSto extends Model
         
         static::creating(function ($model) {
             if (Auth::check()) {
-                $model->created_by = Auth::user()->name;
+                $model->created_by = Auth::user()->id;
             }
         });
     }
     
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by', 'name');
+        return $this->belongsTo(User::class, 'created_by');
     }
     
     public function stockOnHands(): HasMany

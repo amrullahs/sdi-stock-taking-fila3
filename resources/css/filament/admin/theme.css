@@ -105,58 +105,6 @@
     white-space: nowrap;
     min-width: max-content;
 }
-
-/* Responsive column widths */
-.fi-modal .fi-ta-header-cell:nth-child(1),
-.fi-modal .fi-ta-cell:nth-child(1) {
-    width: 8%; /* Model */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(2),
-.fi-modal .fi-ta-cell:nth-child(2) {
-    width: 12%; /* Image */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(3),
-.fi-modal .fi-ta-cell:nth-child(3) {
-    width: 25%; /* Part Name */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(4),
-.fi-modal .fi-ta-cell:nth-child(4) {
-    width: 10%; /* Total On Hand */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(5),
-.fi-modal .fi-ta-cell:nth-child(5) {
-    /* width: 8%; Storage */
-    /* ← PASTIKAN auto */
-width: auto;
-    /* Biarkan width natural */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(6),
-.fi-modal .fi-ta-cell:nth-child(6) {/* width: 8%; Storage */
-    /* ← PASTIKAN auto */
-    width: auto;
-    /* Biarkan width natural */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(7),
-.fi-modal .fi-ta-cell:nth-child(7) {/* width: 8%; Storage */
-    /* ← PASTIKAN auto */
-    width: auto;
-    /* Biarkan width natural */
-}
-
-.fi-modal .fi-ta-header-cell:nth-child(8),
-.fi-modal .fi-ta-cell:nth-child(8) {
-    /* width: 8%; Storage */
-    /* ← PASTIKAN auto */
-    width: auto;
-    /* Biarkan width natural */
-}
-
 /* Remove horizontal scrollbar */
 .fi-modal .fi-ta-content {
     overflow-x: auto !important;
