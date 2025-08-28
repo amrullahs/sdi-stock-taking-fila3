@@ -62,7 +62,7 @@ class LineStosRelationManager extends RelationManager
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('created_by')
+                Tables\Columns\TextColumn::make('creator.name')
                     ->label('Created By')
                     ->sortable()
                     ->searchable(),
