@@ -134,7 +134,7 @@ class LineStoDetailsRelationManager extends RelationManager
                         'min' => '0',
                         'step' => '1',
                     ])
-                    ->columnSpan(1)
+                    ->columnSpanFull()
                     ->afterStateUpdated(function ($state, $record) {
                         $record->update([
                             'storage_count' => (int) $state,
