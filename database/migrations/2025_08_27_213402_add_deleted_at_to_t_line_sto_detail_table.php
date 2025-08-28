@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_line', function (Blueprint $table) {
-            $table->id();
-            $table->string('line', 255, MYSQLI_UNIQUE_KEY_FLAG);
-            $table->string('leader', 255);
-            $table->timestamps();
+        Schema::table('t_line_sto_detail', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_line');
+        Schema::table('t_line_sto_detail', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

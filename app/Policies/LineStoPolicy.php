@@ -39,13 +39,7 @@ class LineStoPolicy
      */
     public function update(User $user, LineSto $lineSto): bool
     {
-        // Check if user has permission
-        if (!$user->can('update_line::sto')) {
-            return false;
-        }
-        
-        // Allow if user is the creator or has super-admin role
-        return $lineSto->created_by === $user->name || $user->hasRole('super-admin');
+        return $user->can('update_line::sto');
     }
 
     /**
@@ -53,13 +47,7 @@ class LineStoPolicy
      */
     public function delete(User $user, LineSto $lineSto): bool
     {
-        // Check if user has permission
-        if (!$user->can('delete_line::sto')) {
-            return false;
-        }
-        
-        // Allow if user is the creator or has super-admin role
-        return $lineSto->created_by === $user->name || $user->hasRole('super-admin');
+        return $user->can('delete_line::sto');
     }
 
     /**

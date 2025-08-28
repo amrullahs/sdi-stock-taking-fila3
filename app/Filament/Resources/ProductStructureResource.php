@@ -104,7 +104,7 @@ class ProductStructureResource extends Resource
                     ->options(function () {
                         return \App\Models\ProductStructure::distinct()
                             ->pluck('model', 'model')
-                            ->filter()
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
                             ->sort()
                             ->toArray();
                     })

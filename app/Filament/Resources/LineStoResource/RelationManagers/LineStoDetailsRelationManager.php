@@ -8,8 +8,10 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
 
 class LineStoDetailsRelationManager extends RelationManager
 {
@@ -94,19 +96,22 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->grow(true)
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('lineModelDetail.qad_number')
-                    ->label('QAD')
-                    ->sortable()
-                    ->searchable()
-                    ->wrap(),
-                Tables\Columns\TextColumn::make('lineModelDetail.part_name')
-                    ->label('Part Name')
-                    ->sortable()
-                    ->searchable()
-                    ->wrap(),
-                Tables\Columns\TextColumn::make('lineModelDetail.part_number')
-                    ->label('Part Nbr')
-                    ->sortable()
-                    ->searchable()
+                    ->label('QAD - Part Details')
+                    ->formatStateUsing(function ($record) {
+                        $qad = $record->lineModelDetail?->qad_number ?? '';
+                        $partName = $record->lineModelDetail?->part_name ?? '';
+                        $partNumber = $record->lineModelDetail?->part_number ?? '';
+                        
+                        // Make QAD number bold
+                        $qadFormatted = $qad ? '<strong>' . $qad . '</strong>' : '';
+                        
+                        return new \Illuminate\Support\HtmlString(
+                            collect([$qadFormatted, $partName, $partNumber])
+                                ->filter()
+                                ->join('<br>')
+                        );
+                    })
+                    ->searchable(['lineModelDetail.qad_number', 'lineModelDetail.part_name', 'lineModelDetail.part_number'])
                     ->wrap(),
                 Tables\Columns\TextColumn::make('total_on_hand')
                     ->label('OnHand')
@@ -119,22 +124,66 @@ class LineStoDetailsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextInputColumn::make('storage_count')
                     ->label('Storage')
-                    ->view('filament.tables.columns.number-input-with-buttons')
-                    ->viewData(['columnName' => 'storage_count'])
-                    ->width('100px')
-                    ->extraAttributes(['class' => 'text-center']),
+                    ->type('number')
+                    ->placeholder('-')
+                    ->rules(['integer', 'min:0'])
+                    // ->width('50px')
+                    // ->extraAttributes(['style' => 'max-width: 20px', 'class' => 'max-w-20'])
+                    ->extraInputAttributes([
+                        'class' => 'text-center max-w-10',
+                        'min' => '0',
+                        'step' => '1',
+                    ])
+                    ->columnSpan(1)
+                    ->afterStateUpdated(function ($state, $record) {
+                        $record->update(['storage_count' => (int) $state]);
+
+                        Notification::make()
+                            ->title('Storage count updated')
+                            ->success()
+                            ->send();
+                    }),
+
                 Tables\Columns\TextInputColumn::make('wip_count')
                     ->label('WIP')
-                    ->view('filament.tables.columns.number-input-with-buttons')
-                    ->viewData(['columnName' => 'wip_count'])
-                    ->width('120px')
-                    ->extraAttributes(['class' => 'text-center']),
+                    ->type('number')
+                    ->placeholder('-')
+                    ->rules(['integer', 'min:0'])
+                    // ->width('50px')
+                    // ->extraAttributes(['style' => 'max-width: 20px', 'class' => 'max-w-20'])
+                    ->extraInputAttributes([
+                        'class' => 'text-center',
+                        'min' => '0',
+                        'step' => '1'
+                    ])
+                    ->afterStateUpdated(function ($state, $record) {
+                        $record->update(['wip_count' => (int) $state]);
+
+                        Notification::make()
+                            ->title('WIP count updated')
+                            ->success()
+                            ->send();
+                    }),
+
                 Tables\Columns\TextInputColumn::make('ng_count')
                     ->label('NG')
-                    ->view('filament.tables.columns.number-input-with-buttons')
-                    ->viewData(['columnName' => 'ng_count'])
-                    ->width('120px')
-                    ->extraAttributes(['class' => 'text-center']),
+                    ->type('number')
+                    ->placeholder('-')
+                    ->rules(['integer', 'min:0'])
+                    ->width('50px')
+                    ->extraInputAttributes([
+                        'class' => 'text-center',
+                        'min' => '0',
+                        'step' => '1'
+                    ])
+                    ->afterStateUpdated(function ($state, $record) {
+                        $record->update(['ng_count' => (int) $state]);
+
+                        Notification::make()
+                            ->title('NG count updated')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Columns\TextColumn::make('total_count')
                     ->label('Total')
                     ->numeric()
@@ -177,52 +226,5 @@ class LineStoDetailsRelationManager extends RelationManager
                 // ]),
             ]);
         // ->defaultSort('lineModelDetail.model_id', 'asc');
-    }
-
-    /**
-     * Update count field via AJAX
-     */
-    public function updateCount($recordId, $field, $value)
-    {
-        try {
-            $record = $this->getRelationship()->find($recordId);
-
-            if (!$record) {
-                return [
-                    'success' => false,
-                    'message' => 'Record not found'
-                ];
-            }
-
-            // Validate field name
-            if (!in_array($field, ['storage_count', 'wip_count', 'ng_count'])) {
-                return [
-                    'success' => false,
-                    'message' => 'Invalid field name'
-                ];
-            }
-
-            // Validate value
-            $value = $value === null || $value === '' ? null : (int) $value;
-            if ($value !== null && $value < 0) {
-                return [
-                    'success' => false,
-                    'message' => 'Value cannot be negative'
-                ];
-            }
-
-            // Update the field
-            $record->update([$field => $value]);
-
-            return [
-                'success' => true,
-                'message' => 'Count updated successfully'
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'An error occurred: ' . $e->getMessage()
-            ];
-        }
     }
 }

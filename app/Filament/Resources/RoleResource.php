@@ -143,6 +143,7 @@ class RoleResource extends Resource
             'index' => Pages\ListRoles::route('/'),
             'create' => Pages\CreateRole::route('/create'),
             'edit' => Pages\EditRole::route('/{record}/edit'),
+            'manage' => Pages\ManageRoles::route('/manage'),
         ];
     }
 }

@@ -243,6 +243,7 @@ class LineStoResource extends Resource
                     ->color('info')
                     ->modalHeading(false)
                     ->modalWidth(MaxWidth::Screen)
+                    ->modalCancelActionLabel('✕')
                     ->relationManager(RelationManagers\LineStoDetailsRelationManager::make()),
                 Tables\Actions\EditAction::make(),
             ])

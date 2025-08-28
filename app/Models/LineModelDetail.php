@@ -36,6 +36,6 @@ class LineModelDetail extends Model
 
     public function model(): BelongsTo
     {
-        return $this->belongsTo(ModelStructure::class, 'model_id');
+        return $this->belongsTo(ModelStructure::class, 'model_id', 'model');
     }
 }

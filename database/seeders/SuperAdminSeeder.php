@@ -30,7 +30,7 @@ class SuperAdminSeeder extends Seeder
         $superAdminUser = User::firstOrCreate(
             ['email' => 'amrullah@sankei-dharma.com'],
             [
-                'name' => 'Amrullah Super Admin',
+                'name' => 'Amrullah',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]

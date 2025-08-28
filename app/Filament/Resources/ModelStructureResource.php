@@ -83,6 +83,8 @@ class ModelStructureResource extends Resource
                     ->options(function () {
                         return \App\Models\ModelStructure::distinct()
                             ->pluck('model', 'model')
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
+                            ->sort()
                             ->toArray();
                     })
                     ->searchable(),

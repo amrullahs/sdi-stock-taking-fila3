@@ -33,7 +33,9 @@ class LineResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('line')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->helperText('Line name must be unique'),
                 Forms\Components\TextInput::make('leader')
                     ->required()
                     ->maxLength(255),

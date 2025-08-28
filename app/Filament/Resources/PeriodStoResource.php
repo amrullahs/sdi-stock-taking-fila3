@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
 use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
+use Filament\Support\Enums\MaxWidth;
 
 class PeriodStoResource extends Resource
 {
@@ -181,14 +182,20 @@ class PeriodStoResource extends Resource
                     }),
                 Tables\Filters\SelectFilter::make('site')
                     ->label('Site')
-                    ->options(fn(): array => PeriodSto::distinct()->pluck('site', 'site')->toArray())
+                    ->options(fn(): array => PeriodSto::distinct()->pluck('site', 'site')->filter(fn($value) => !empty($value) && !is_null($value))->sort()->toArray())
                     ->searchable(),
             ])
             ->actions([
-
-                Tables\Actions\ViewAction::make(),
+                RelationManagerAction::make('lineStos')
+                    ->label('View Line STO')
+                    ->icon('heroicon-o-list-bullet')
+                    ->color('info')
+                    ->modalHeading(fn($record) => 'Line STO - ' . $record->period_sto->format('d/m/Y') . ' (' . $record->site . ')')
+                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                    ->relationManager(RelationManagers\LineStosRelationManager::make()),
+                // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -201,7 +208,7 @@ class PeriodStoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\LineStosRelationManager::class,
         ];
     }
 

@@ -210,7 +210,7 @@ class LineStoDetailResource extends Resource
                     ->preload(),
                 SelectFilter::make('line_id')
                     ->label('Line')
-                    ->options(Line::all()->pluck('line', 'id'))
+                    ->options(Line::distinct()->pluck('line', 'id')->filter(fn($value) => !empty($value) && !is_null($value))->sort())
                     ->searchable()
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
