@@ -40,8 +40,7 @@ class LineModelDetailResource extends Resource
                 Forms\Components\TextInput::make('model_id')
                     ->label('Model')
                     // ->relationship('model', 'model_id')
-                    // ->required()
-                    ->searchable(),
+                    ->required(),
 
                 Forms\Components\TextInput::make('type')
                     ->label('Type')

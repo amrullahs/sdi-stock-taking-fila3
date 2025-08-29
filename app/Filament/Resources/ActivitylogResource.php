@@ -42,8 +42,6 @@ class ActivitylogResource extends BaseActivitylogResource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'default' => 'gray',
-                        'login' => 'success',
-                        'logout' => 'warning',
                         'created' => 'info',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -85,8 +83,6 @@ class ActivitylogResource extends BaseActivitylogResource
                     ->label('Log Type')
                     ->options([
                         'default' => 'Default',
-                        'login' => 'Login',
-                        'logout' => 'Logout',
                         'created' => 'Created',
                         'updated' => 'Updated',
                         'deleted' => 'Deleted',
