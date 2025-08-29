@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class PeriodSto extends Model
 {
+    use LogsActivity;
     protected $table = 't_period_sto';
     
     protected $fillable = [
@@ -31,6 +34,14 @@ class PeriodSto extends Model
                 $model->created_by = Auth::user()->id;
             }
         });
+    }
+    
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['period_sto', 'site', 'status'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
     
     public function creator(): BelongsTo

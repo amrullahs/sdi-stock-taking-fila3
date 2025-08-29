@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class LineSto extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
     
     protected $table = 't_line_sto';
     
@@ -86,5 +88,13 @@ class LineSto extends Model
         $maxPossibleCounts = $totalRows * 3; // 3 count fields per row
         
         return $maxPossibleCounts > 0 ? round(($totalFilledCounts / $maxPossibleCounts) * 100) : 0;
+    }
+    
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['period_id', 'line_id', 'tanggal_sto', 'sto_start_at', 'sto_submit_at', 'status', 'progress'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

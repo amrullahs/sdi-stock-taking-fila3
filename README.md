@@ -8,7 +8,8 @@ Aplikasi internal stock taking menggunakan Laravel 11 dengan Filament 3.3 untuk 
 - **Master Data Management**: Line, Product Structure, Model Structure
 - **Stock Taking Process**: Period STO, Line STO, Stock Taking Detail
 - **User Management**: Role-based access dengan Filament Shield
-- **Import/Export**: CSV import untuk master data
+- **Import/Export**: CSV import untuk master data dan Excel export untuk Line STO Detail
+- **Activity Log**: Pencatatan aktivitas login/logout dan perubahan data
 - **Modal Relation Manager**: Interface yang user-friendly
 
 ## Tech Stack
@@ -24,6 +25,9 @@ Aplikasi internal stock taking menggunakan Laravel 11 dengan Filament 3.3 untuk 
 
 - **bezhansalleh/filament-shield**: Role & Permission management
 - **spatie/laravel-permission**: Permission system
+- **spatie/laravel-activitylog**: Activity logging system
+- **rmsramos/filament-activitylog**: Filament plugin untuk activity log
+- **pxlrbt/filament-excel**: Export functionality untuk Excel
 - **guava/filament-modal-relation-managers**: Modal relation managers
 - **awcodes/filament-sticky-header**: Sticky header untuk tables
 - **maatwebsite/excel**: Import/Export Excel/CSV
@@ -309,6 +313,30 @@ Setelah instalasi, login dengan:
 - `permissions` - Permission management (Spatie Permission)
 - `model_has_roles` - User-role assignment
 - `role_has_permissions` - Role-permission assignment
+- `activity_log` - Activity logging (Spatie Activity Log)
+
+## Activity Log
+
+Aplikasi dilengkapi dengan sistem activity log yang mencatat:
+
+### Aktivitas yang Dicatat
+- **Login/Logout Events**: Pencatatan waktu login dan logout user dengan IP address dan user agent
+- **Data Changes**: Perubahan pada model PeriodSto, LineSto, dan LineStoDetail
+- **User Actions**: Aktivitas user dalam sistem
+
+### Akses Activity Log
+1. Login sebagai user dengan permission `view_activity_log`
+2. Navigasi ke menu "Log Activity" di sidebar
+3. Filter berdasarkan log name, user, atau tanggal
+
+### Permission Required
+- `view_activity_log`: Untuk melihat activity log
+- Secara default, hanya role `super_admin` yang memiliki akses
+
+### Konfigurasi
+- File konfigurasi: `config/activitylog.php`
+- Plugin Filament: `config/filament-activitylog.php`
+- Service Provider: Terdaftar di `bootstrap/providers.php`
 
 ## Available Seeders
 
@@ -337,6 +365,141 @@ mysqldump -u sdi_user -p sdi_stock_taking > backup_$(date +%Y%m%d).sql
 # Restore
 mysql -u sdi_user -p sdi_stock_taking < backup_20250120.sql
 ```
+
+## Update Deployment ke Server Production
+
+Panduan untuk melakukan update aplikasi di server production:
+
+### Step 1: Backup Sebelum Update
+
+```bash
+# Backup database
+mysqldump -u sdi_user -p sdi_stock_taking > backup_before_update_$(date +%Y%m%d_%H%M).sql
+
+# Backup aplikasi
+cp -r /path/to/sdi-stock-taking-fila3 /path/to/backup/sdi-stock-taking-fila3_$(date +%Y%m%d_%H%M)
+```
+
+### Step 2: Pull Latest Changes
+
+```bash
+# Masuk ke direktori aplikasi
+cd /path/to/sdi-stock-taking-fila3
+
+# Stash perubahan lokal (jika ada)
+git stash
+
+# Pull commit terbaru
+git pull origin main
+
+# Atau pull commit tertentu
+git fetch
+git checkout <commit-hash>
+```
+
+### Step 3: Update Dependencies
+
+```bash
+# Update PHP dependencies
+composer install --optimize-autoloader --no-dev
+
+# Update Node.js dependencies (jika ada perubahan)
+npm install
+
+# Build assets untuk production
+npm run build
+```
+
+### Step 4: Database Migration
+
+```bash
+# Jalankan migration baru (jika ada)
+php artisan migrate --force
+
+# Jika ada perubahan permission/role
+php artisan shield:auto-generate --force
+
+# Re-assign permissions ke super admin
+php artisan db:seed --class=SuperAdminSeeder
+```
+
+### Step 5: Clear Cache & Optimize
+
+```bash
+# Clear semua cache
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+# Cache ulang untuk production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+
+# Optimize autoloader
+composer dump-autoload --optimize
+```
+
+### Step 6: Restart Services
+
+```bash
+# Restart PHP-FPM (jika menggunakan Nginx)
+sudo systemctl restart php8.2-fpm
+
+# Restart Apache (jika menggunakan Apache)
+sudo systemctl restart apache2
+
+# Restart Nginx (jika menggunakan Nginx)
+sudo systemctl restart nginx
+```
+
+### Step 7: Verifikasi Update
+
+1. **Test Login**: Pastikan login masih berfungsi
+2. **Check Activity Log**: Verifikasi menu "Log Activity" muncul untuk super admin
+3. **Test Export**: Coba export Excel dari Line STO Detail
+4. **Check Permissions**: Pastikan semua permission masih berfungsi
+5. **Monitor Logs**: Periksa `storage/logs/laravel.log` untuk error
+
+### Rollback (Jika Diperlukan)
+
+Jika terjadi masalah setelah update:
+
+```bash
+# Rollback ke commit sebelumnya
+git checkout <previous-commit-hash>
+
+# Restore database
+mysql -u sdi_user -p sdi_stock_taking < backup_before_update_YYYYMMDD_HHMM.sql
+
+# Clear cache
+php artisan cache:clear
+php artisan config:clear
+
+# Restart services
+sudo systemctl restart php8.2-fpm nginx
+```
+
+### Checklist Update
+
+- [ ] Backup database dan aplikasi
+- [ ] Pull latest changes dari repository
+- [ ] Update dependencies (composer & npm)
+- [ ] Run database migrations
+- [ ] Update permissions dengan Shield
+- [ ] Clear dan cache ulang
+- [ ] Restart web services
+- [ ] Test fungsionalitas utama
+- [ ] Monitor logs untuk error
+
+### Fitur Baru dalam Update Ini
+
+- ✅ **Activity Log System**: Pencatatan aktivitas login/logout dan perubahan data
+- ✅ **Excel Export**: Export data Line STO Detail ke format Excel
+- ✅ **Enhanced Security**: Improved permission management
+- ✅ **Better UX**: Modal-based export functionality
 
 ## Troubleshooting
 
@@ -377,6 +540,53 @@ php artisan cache:clear
 ```
 
 **Verifikasi**: User super-admin harus memiliki 168+ permissions setelah proses di atas.
+
+### Activity Log Issues
+
+**Problem**: Error "Class 'Spatie\Activitylog\Facades\LogActivity' not found"
+
+**Solution**: Pastikan ActivitylogServiceProvider terdaftar di `bootstrap/providers.php`:
+
+```php
+<?php
+
+return [
+    App\Providers\AppServiceProvider::class,
+    App\Providers\EventServiceProvider::class,
+    App\Providers\Filament\AdminPanelProvider::class,
+    App\Providers\ShieldAutoGenerateProvider::class,
+    Spatie\Activitylog\ActivitylogServiceProvider::class, // Pastikan ini ada
+];
+```
+
+Kemudian clear cache:
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+**Problem**: Menu "Log Activity" tidak muncul di sidebar
+
+**Solution**: 
+1. Pastikan permission `view_activity_log` sudah dibuat
+2. Assign permission ke role yang sesuai
+3. Clear permission cache
+
+```bash
+# Buat permission jika belum ada
+php artisan tinker
+>>> Spatie\Permission\Models\Permission::create(['name' => 'view_activity_log']);
+
+# Assign ke super admin role
+>>> $role = Spatie\Permission\Models\Role::findByName('super_admin');
+>>> $role->givePermissionTo('view_activity_log');
+
+# Clear cache
+php artisan permission:cache-reset
+```
 
 ### Database Connection Error
 

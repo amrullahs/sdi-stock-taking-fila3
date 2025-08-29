@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class LineStoDetail extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
     
     protected $table = 't_line_sto_detail';
 
@@ -80,5 +82,13 @@ class LineStoDetail extends Model
         }
         
         return $storage + $wip + $ng;
+    }
+    
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['period_id', 'line_sto_id', 'line_id', 'line_model_detail_id', 'storage_count', 'wip_count', 'ng_count', 'total_count', 'remark'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

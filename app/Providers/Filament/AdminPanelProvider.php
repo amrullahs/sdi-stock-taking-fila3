@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Asmit\ResizedColumn\ResizedColumnPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Rmsramos\Activitylog\ActivitylogPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -61,6 +62,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label('User Management')
                     ->icon('heroicon-o-users')
                     ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Log Activity')
+                    ->icon('heroicon-o-document-text')
+                    ->collapsed(),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -82,6 +87,8 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 ResizedColumnPlugin::make()
                     ->preserveOnDB(true), // Enable database storage
+                ActivitylogPlugin::make()
+                    ->resource(\App\Filament\Resources\ActivitylogResource::class),
             ])
             ->authMiddleware([
                 Authenticate::class,
