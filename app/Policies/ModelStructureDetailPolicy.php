@@ -63,7 +63,7 @@ class ModelStructureDetailPolicy
      */
     public function forceDelete(User $user, ModelStructureDetail $modelStructureDetail): bool
     {
-        return $user->can('force_delete_model::structure::detail');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class ModelStructureDetailPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_model::structure::detail');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class ModelStructureDetailPolicy
      */
     public function restore(User $user, ModelStructureDetail $modelStructureDetail): bool
     {
-        return $user->can('restore_model::structure::detail');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class ModelStructureDetailPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_model::structure::detail');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class ModelStructureDetailPolicy
      */
     public function replicate(User $user, ModelStructureDetail $modelStructureDetail): bool
     {
-        return $user->can('replicate_model::structure::detail');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

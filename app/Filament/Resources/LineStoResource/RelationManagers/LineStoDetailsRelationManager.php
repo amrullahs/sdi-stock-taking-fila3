@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
+use Filament\Tables\Enums\FiltersLayout;
 
 class LineStoDetailsRelationManager extends RelationManager
 {
@@ -67,7 +68,7 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->width(100)
                     ->height(100)
                     ->extraImgAttributes([
-                        'style' => 'object-fit: contain; width: 100%; height: 100%;'
+                        'style' => 'object-fit: contain; width: 100%; height: 100%; cursor: pointer;'
                     ])
                     ->getStateUsing(function (\App\Models\LineStoDetail $record): ?string {
                         // Akses lineModelDetail melalui relasi
@@ -98,34 +99,90 @@ class LineStoDetailsRelationManager extends RelationManager
                     })
                     ->defaultImageUrl(url('/images/no-image.svg'))
                     ->grow(true)
-                    ->toggleable(),
+                    ->toggleable()
+                    ->action(
+                        Tables\Actions\Action::make('uploadImage')
+                            ->label('Upload Image')
+                            ->icon('heroicon-o-camera')
+                            ->form([
+                                Forms\Components\FileUpload::make('image')
+                                    ->label('Upload Image')
+                                    ->image()
+                                    ->maxSize(2048)
+                                    ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'])
+                                    ->directory('img')
+                                    ->required()
+                                    ->helperText('Upload gambar untuk part ini. Format: JPG, PNG, SVG. Maksimal 2MB.'),
+                            ])
+                            ->action(function (array $data, $record) {
+                                $lineModelDetail = $record->lineModelDetail;
+
+                                if (!$lineModelDetail) {
+                                    return;
+                                }
+
+                                // Update image path in database
+                                $lineModelDetail->update([
+                                    'image' => $data['image']
+                                ]);
+
+                                // Also save physical file with qad_number name if available
+                                if (!empty($lineModelDetail->qad_number)) {
+                                    $imagePath = $data['image'];
+                                    $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+                                    $newFileName = "{$lineModelDetail->qad_number}.{$extension}";
+
+                                    // Copy to public/img directory with qad_number name
+                                    $sourcePath = storage_path('app/public/' . $imagePath);
+                                    $destinationPath = storage_path('app/public/img/' . $newFileName);
+
+                                    if (file_exists($sourcePath)) {
+                                        // Create directory if not exists
+                                        if (!file_exists(storage_path('app/public/img'))) {
+                                            mkdir(storage_path('app/public/img'), 0755, true);
+                                        }
+
+                                        // Copy file
+                                        copy($sourcePath, $destinationPath);
+                                    }
+                                }
+                            })
+                            ->modalWidth('md')
+                            ->modalHeading('Upload Image Part')
+                            ->modalDescription('Upload gambar untuk part ini.')
+                            ->modalSubmitActionLabel('Upload')
+                            ->modalCancelActionLabel('Batal')
+                            ->color('primary')
+                            ->requiresConfirmation()
+                    ),
                 Tables\Columns\TextColumn::make('lineModelDetail.qad_number')
-                    ->label('QAD - Part Details')
+                    ->label('QAD - Part Desc - Onhand')
                     ->formatStateUsing(function ($record) {
                         $qad = $record->lineModelDetail?->qad_number ?? '';
                         $partName = $record->lineModelDetail?->part_name ?? '';
                         $partNumber = $record->lineModelDetail?->part_number ?? '';
-
+                        $totalOnHand = $record->total_on_hand;
                         // Make QAD number bold
                         $qadFormatted = $qad ? '<strong>' . $qad . '</strong>' : '';
+                        $totalOnHandFormatted = $totalOnHand !== null ? 'OnHand = ( ' . $totalOnHand . ' )' : '';
 
                         return new \Illuminate\Support\HtmlString(
-                            collect([$qadFormatted, $partName, $partNumber])
+                            collect([$qadFormatted, $partName, $partNumber, $totalOnHandFormatted])
                                 ->filter()
                                 ->join('<br>')
                         );
                     })
                     ->searchable(['lineModelDetail.qad_number', 'lineModelDetail.part_name', 'lineModelDetail.part_number'])
                     ->wrap(),
-                Tables\Columns\TextColumn::make('total_on_hand')
-                    ->label('OnHand')
-                    ->numeric()
-                    ->sortable()
-                    ->badge()
-                    ->color('info')
-                    ->getStateUsing(function ($record) {
-                        return $record->total_on_hand;
-                    }),
+                // Tables\Columns\TextColumn::make('total_on_hand')
+                //     ->label('OnHand')
+                //     ->numeric()
+                //     ->sortable()
+                //     ->badge()
+                //     ->color('info')
+                //     ->getStateUsing(function ($record) {
+                //         return $record->total_on_hand;
+                //     }),
                 Tables\Columns\TextInputColumn::make('storage_count')
                     ->label('Storage')
                     ->type('number')
@@ -200,11 +257,6 @@ class LineStoDetailsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('lineModelDetail.model_id')
-                    ->label('Model')
-                    ->relationship('lineModelDetail', 'model_id')
-                    ->searchable()
-                    ->preload(),
                 Tables\Filters\Filter::make('qad_number')
                     ->form([
                         Forms\Components\TextInput::make('qad_number')
@@ -221,7 +273,7 @@ class LineStoDetailsRelationManager extends RelationManager
                                 )
                             );
                     })
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->headerActions([
                 // Header actions disembunyikan
             ])

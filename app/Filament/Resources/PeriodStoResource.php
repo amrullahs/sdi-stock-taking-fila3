@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
 use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 use Filament\Support\Enums\MaxWidth;
+use Filament\Tables\Enums\FiltersLayout;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class PeriodStoResource extends Resource
 {
@@ -42,7 +44,7 @@ class PeriodStoResource extends Resource
                             ->native(false)
                             ->displayFormat('d/m/Y')
                             ->closeOnDateSelection()
-                            ->disabled(fn (string $operation) => $operation === 'edit') // Make field disabled when editing
+                            ->disabled(fn(string $operation) => $operation === 'edit') // Make field disabled when editing
                             ->rules([
                                 function (string $operation) {
                                     return function (string $attribute, $value, \Closure $fail) use ($operation) {
@@ -51,7 +53,7 @@ class PeriodStoResource extends Resource
                                         // Only check for duplicate period when creating (not when editing)
                                         if ($operation === 'create') {
                                             $query = PeriodSto::where('period_sto', $value);
-                                            
+
                                             if ($query->exists()) {
                                                 $date = Carbon::parse($value)->format('d/m/Y');
                                                 $fail("Sudah ada period untuk tanggal {$date}.");
@@ -81,14 +83,15 @@ class PeriodStoResource extends Resource
                         Forms\Components\FileUpload::make('excel_file')
                             ->label('Upload Excel File')
                             ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'])
-                            ->required(fn (string $operation) => $operation === 'create') // Only required when creating
+                            ->required(fn(string $operation) => $operation === 'create') // Only required when creating
                             ->disk('public')
                             ->directory('excel-imports')
                             ->visibility('public')
                             ->preserveFilenames()
                             ->maxSize(10240) // 10MB max
-                            ->helperText(fn (string $operation) => 
-                                $operation === 'create' 
+                            ->helperText(
+                                fn(string $operation) =>
+                                $operation === 'create'
                                     ? 'Upload Excel file dengan kolom: item_number, desc, location, lot, ref, status, qty_on_hand, confirming, created, total_on_hand. Download template di halaman list Period STO. Max size: 10MB'
                                     : 'Upload Excel file opsional. Kosongkan jika tidak ingin mengupdate data stock. Max size: 10MB'
                             )
@@ -165,29 +168,12 @@ class PeriodStoResource extends Resource
                     ->tooltip('Download template CSV dengan delimiter comma (,)'),
             ])
             ->filters([
-                Tables\Filters\Filter::make('period_sto')
-                    ->form([
-                        Forms\Components\DatePicker::make('period_from')
-                            ->label('Period From'),
-                        Forms\Components\DatePicker::make('period_until')
-                            ->label('Period Until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['period_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('period_sto', '>=', $date),
-                            )
-                            ->when(
-                                $data['period_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('period_sto', '<=', $date),
-                            );
-                    }),
+                DateRangeFilter::make('period_sto'),
                 Tables\Filters\SelectFilter::make('site')
                     ->label('Site')
                     ->options(fn(): array => PeriodSto::distinct()->pluck('site', 'site')->filter(fn($value) => !empty($value) && !is_null($value))->sort()->toArray())
                     ->searchable(),
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 RelationManagerAction::make('lineStos')
                     ->label('View Line STO')

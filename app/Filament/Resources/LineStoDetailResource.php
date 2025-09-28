@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Filament\Tables\Enums\FiltersLayout;
 
 class LineStoDetailResource extends Resource
 {
@@ -223,7 +224,7 @@ class LineStoDetailResource extends Resource
                             })
                         );
                     }),
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

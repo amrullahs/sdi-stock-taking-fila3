@@ -63,7 +63,7 @@ class LinePolicy
      */
     public function forceDelete(User $user, Line $line): bool
     {
-        return $user->can('force_delete_line');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class LinePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_line');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class LinePolicy
      */
     public function restore(User $user, Line $line): bool
     {
-        return $user->can('restore_line');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class LinePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_line');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class LinePolicy
      */
     public function replicate(User $user, Line $line): bool
     {
-        return $user->can('replicate_line');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

@@ -63,7 +63,7 @@ class StockTakingPolicy
      */
     public function forceDelete(User $user, StockTaking $stockTaking): bool
     {
-        return $user->can('force_delete_stock::taking');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class StockTakingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stock::taking');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class StockTakingPolicy
      */
     public function restore(User $user, StockTaking $stockTaking): bool
     {
-        return $user->can('restore_stock::taking');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class StockTakingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stock::taking');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class StockTakingPolicy
      */
     public function replicate(User $user, StockTaking $stockTaking): bool
     {
-        return $user->can('replicate_stock::taking');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

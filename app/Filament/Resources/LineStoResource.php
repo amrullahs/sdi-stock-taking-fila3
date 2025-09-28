@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 use Filament\Support\Enums\MaxWidth;
+use Filament\Tables\Enums\FiltersLayout;
 
 class LineStoResource extends Resource
 {
@@ -27,6 +28,14 @@ class LineStoResource extends Resource
     protected static ?string $navigationGroup = 'Line STO';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('periodSto', function (Builder $query) {
+                $query->where('status', '!=', 'close');
+            });
+    }
 
     public static function form(Form $form): Form
     {
@@ -45,7 +54,7 @@ class LineStoResource extends Resource
                     ->searchable()
                     ->required()
                     ->placeholder('Pilih Period STO')
-                    ->disabled(fn($record) => $record && $record->status === 'onprogress'),
+                    ->disabled(fn($record) => $record && ($record->status === 'onprogress' || ($record->periodSto && $record->periodSto->status === 'close'))),
 
                 Forms\Components\Select::make('line_id')
                     ->label('Line')
@@ -231,7 +240,7 @@ class LineStoResource extends Resource
                         'close' => 'Close',
                     ])
                     ->searchable(),
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 RelationManagerAction::make('lineStoDetails')
                     ->label('Detail')

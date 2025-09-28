@@ -63,7 +63,7 @@ class PeriodStoPolicy
      */
     public function forceDelete(User $user, PeriodSto $periodSto): bool
     {
-        return $user->can('force_delete_period::sto');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PeriodStoPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_period::sto');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PeriodStoPolicy
      */
     public function restore(User $user, PeriodSto $periodSto): bool
     {
-        return $user->can('restore_period::sto');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PeriodStoPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_period::sto');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PeriodStoPolicy
      */
     public function replicate(User $user, PeriodSto $periodSto): bool
     {
-        return $user->can('replicate_period::sto');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

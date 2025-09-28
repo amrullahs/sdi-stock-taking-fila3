@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\StockTakingDetail;
+use Spatie\Activitylog\Models\Activity;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class StockTakingDetailPolicy
+class ActivityPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class StockTakingDetailPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_stock::taking::detail');
+        return $user->can('view_any_activitylog');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, StockTakingDetail $stockTakingDetail): bool
+    public function view(User $user, Activity $activity): bool
     {
-        return $user->can('view_stock::taking::detail');
+        return $user->can('view_activitylog');
     }
 
     /**
@@ -31,23 +31,23 @@ class StockTakingDetailPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_stock::taking::detail');
+        return $user->can('create_activitylog');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, StockTakingDetail $stockTakingDetail): bool
+    public function update(User $user, Activity $activity): bool
     {
-        return $user->can('update_stock::taking::detail');
+        return $user->can('update_activitylog');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, StockTakingDetail $stockTakingDetail): bool
+    public function delete(User $user, Activity $activity): bool
     {
-        return $user->can('delete_stock::taking::detail');
+        return $user->can('delete_activitylog');
     }
 
     /**
@@ -55,13 +55,13 @@ class StockTakingDetailPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stock::taking::detail');
+        return $user->can('delete_any_activitylog');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, StockTakingDetail $stockTakingDetail): bool
+    public function forceDelete(User $user, Activity $activity): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -77,7 +77,7 @@ class StockTakingDetailPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, StockTakingDetail $stockTakingDetail): bool
+    public function restore(User $user, Activity $activity): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -93,7 +93,7 @@ class StockTakingDetailPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, StockTakingDetail $stockTakingDetail): bool
+    public function replicate(User $user, Activity $activity): bool
     {
         return $user->can('{{ Replicate }}');
     }
@@ -103,6 +103,6 @@ class StockTakingDetailPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_stock::taking::detail');
+        return $user->can('reorder_activitylog');
     }
 }

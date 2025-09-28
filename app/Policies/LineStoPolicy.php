@@ -39,23 +39,7 @@ class LineStoPolicy
      */
     public function update(User $user, LineSto $lineSto): bool
     {
-        // Super admin can update anything
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
-        // Check if user has basic update permission
-        if (!$user->can('update_line::sto')) {
-            return false;
-        }
-
-        // If user owns the record, they can update it (handle string/int comparison)
-        if ($lineSto->created_by == $user->id) {
-            return true;
-        }
-
-        // If user has permission to update others' records
-        return $user->can('update_others_line::sto');
+        return $user->can('update_line::sto');
     }
 
     /**
@@ -63,23 +47,7 @@ class LineStoPolicy
      */
     public function delete(User $user, LineSto $lineSto): bool
     {
-        // Super admin can delete anything
-        if ($user->hasRole('super-admin')) {
-            return true;
-        }
-
-        // Check if user has basic delete permission
-        if (!$user->can('delete_line::sto')) {
-            return false;
-        }
-
-        // If user owns the record, they can delete it (handle string/int comparison)
-        if ($lineSto->created_by == $user->id) {
-            return true;
-        }
-
-        // If user has permission to delete others' records
-        return $user->can('delete_others_line::sto');
+        return $user->can('delete_line::sto');
     }
 
     /**
@@ -95,7 +63,7 @@ class LineStoPolicy
      */
     public function forceDelete(User $user, LineSto $lineSto): bool
     {
-        return $user->can('force_delete_line::sto');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -103,7 +71,7 @@ class LineStoPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_line::sto');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +79,7 @@ class LineStoPolicy
      */
     public function restore(User $user, LineSto $lineSto): bool
     {
-        return $user->can('restore_line::sto');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -119,7 +87,7 @@ class LineStoPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_line::sto');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -127,7 +95,7 @@ class LineStoPolicy
      */
     public function replicate(User $user, LineSto $lineSto): bool
     {
-        return $user->can('replicate_line::sto');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
