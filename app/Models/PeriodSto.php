@@ -13,29 +13,29 @@ class PeriodSto extends Model
 {
     use LogsActivity;
     protected $table = 't_period_sto';
-    
+
     protected $fillable = [
         'period_sto',
         'created_by',
         'site',
         'status',
     ];
-    
+
     protected $casts = [
         'period_sto' => 'date',
     ];
-    
+
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($model) {
             if (Auth::check()) {
                 $model->created_by = Auth::user()->id;
             }
         });
     }
-    
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -43,17 +43,17 @@ class PeriodSto extends Model
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
-    
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    
+
     public function stockOnHands(): HasMany
     {
         return $this->hasMany(StockOnHand::class, 'period_sto_id');
     }
-    
+
     /**
      * Get the line STOs for the period STO
      */
@@ -61,7 +61,7 @@ class PeriodSto extends Model
     {
         return $this->hasMany(LineSto::class, 'period_id');
     }
-    
+
     /**
      * Get formatted period STO for display
      */
@@ -69,5 +69,4 @@ class PeriodSto extends Model
     {
         return $this->period_sto ? $this->period_sto->format('d-m-Y') : '';
     }
-
 }

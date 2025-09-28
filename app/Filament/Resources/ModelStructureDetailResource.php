@@ -107,27 +107,6 @@ class ModelStructureDetailResource extends Resource
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Image')
                     ->square(false)
-                    ->getStateUsing(function (ModelStructureDetail $record): ?string {
-                        // Jika field image tidak null, gunakan nilai aslinya
-                        if (!empty($record->image)) {
-                            return $record->image;
-                        }
-
-                        // Jika image null, cari file berdasarkan nilai qad
-                        if (!empty($record->qad)) {
-                            $extensions = ['png', 'jpg', 'jpeg', 'svg'];
-                            foreach ($extensions as $ext) {
-                                $imagePath = storage_path("app/public/img/{$record->qad}.{$ext}");
-                                if (file_exists($imagePath)) {
-                                    return asset("storage/img/{$record->qad}.{$ext}");
-                                }
-                            }
-                        }
-
-                        // Jika tidak ada file yang ditemukan, return null untuk fallback ke defaultImageUrl
-                        return null;
-                    })
-                    ->defaultImageUrl(url('/images/no-image.svg'))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('storage')
                     ->searchable(),

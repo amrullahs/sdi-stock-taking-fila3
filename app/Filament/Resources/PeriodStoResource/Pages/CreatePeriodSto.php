@@ -102,6 +102,9 @@ class CreatePeriodSto extends CreateRecord
 
     protected function afterCreate(): void
     {
+        // Check if this is create or edit operation
+        $isEdit = $this->record->wasRecentlyCreated === false;
+        
         // Import Excel data after PeriodSto is created with transaction
         if (isset($this->excelFilePath) && $this->excelFilePath) {
             DB::beginTransaction();
@@ -222,25 +225,37 @@ class CreatePeriodSto extends CreateRecord
             }
         } else {
             Log::warning('No Excel file uploaded', [
-                'excel_file_path' => $this->excelFilePath ?? 'null'
+                'excel_file_path' => $this->excelFilePath ?? 'null',
+                'is_edit' => $isEdit ?? false
             ]);
             
-            Notification::make()
-                ->title('File Excel Tidak Ditemukan')
-                ->body('File Excel tidak di-upload atau path tidak valid. Pastikan Anda memilih file Excel sebelum menyimpan data.')
-                ->warning()
-                ->persistent()
-                ->actions([
-                    \Filament\Notifications\Actions\Action::make('download_template_semicolon')
-                        ->label('Download Template (Semicolon ;)')
-                        ->url(asset('storage/excel-imports/template_stock_on_hand.csv'))
-                        ->openUrlInNewTab(),
-                    \Filament\Notifications\Actions\Action::make('download_template_comma')
-                        ->label('Download Template (Comma ,)')
-                        ->url(asset('storage/excel-imports/template_stock_on_hand_comma.csv'))
-                        ->openUrlInNewTab()
-                ])
-                ->send();
+            // Different notification for edit vs create
+            if ($isEdit) {
+                // For edit, no Excel upload is optional, so just log and continue
+                Log::info('Edit operation completed without Excel file upload', [
+                    'period_sto_id' => $this->record->id,
+                    'message' => 'Data periode STO berhasil diupdate tanpa upload file Excel'
+                ]);
+                // No notification needed for edit when no file uploaded
+            } else {
+                // For create, warn about missing Excel file
+                Notification::make()
+                    ->title('File Excel Tidak Ditemukan')
+                    ->body('File Excel tidak di-upload atau path tidak valid. Pastikan Anda memilih file Excel sebelum menyimpan data.')
+                    ->warning()
+                    ->persistent()
+                    ->actions([
+                        \Filament\Notifications\Actions\Action::make('download_template_semicolon')
+                            ->label('Download Template (Semicolon ;)')
+                            ->url(asset('storage/excel-imports/template_stock_on_hand.csv'))
+                            ->openUrlInNewTab(),
+                        \Filament\Notifications\Actions\Action::make('download_template_comma')
+                            ->label('Download Template (Comma ,)')
+                            ->url(asset('storage/excel-imports/template_stock_on_hand_comma.csv'))
+                            ->openUrlInNewTab()
+                    ])
+                    ->send();
+            }
         }
     }
 }
