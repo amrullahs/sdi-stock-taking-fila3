@@ -162,14 +162,16 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->formatStateUsing(function ($record) {
                         $qad = $record->lineModelDetail?->qad_number ?? '';
                         $partName = $record->lineModelDetail?->part_name ?? '';
+                        $storage = $record->lineModelDetail?->storage ?? '';
                         $partNumber = $record->lineModelDetail?->part_number ?? '';
                         $totalOnHand = $record->total_on_hand;
                         // Make QAD number bold
                         $qadFormatted = $qad ? '<strong>' . $qad . '</strong>' : '';
-                        $totalOnHandFormatted = $totalOnHand !== null ? 'OnHand = ( ' . $totalOnHand . ' )' : '';
+                        $totalOnHandFormatted = $totalOnHand !== null ? 'OnHand = ( <strong>' . $totalOnHand . '</strong> )' : '';
+                        $storageFormatted = $storage !== null ? 'Storage = ( <strong>' . $storage . '</strong> )' : '';
 
                         return new \Illuminate\Support\HtmlString(
-                            collect([$qadFormatted, $partName, $partNumber, $totalOnHandFormatted])
+                            collect([$qadFormatted, $partName, $partNumber, $storageFormatted,  $totalOnHandFormatted])
                                 ->filter()
                                 ->join('<br>')
                         );
