@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LineStoResource\RelationManagers;
 
 use App\Models\LineModelDetail;
+use App\Models\LineStoDetail;
 use Asmit\ResizedColumn\HasResizableColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 
 class LineStoDetailsRelationManager extends RelationManager
 {
@@ -188,12 +190,11 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->type('number')
                     ->placeholder('-')
                     ->rules(['integer', 'min:0'])
-                    // ->width('50px')
-                    // ->extraAttributes(['style' => 'max-width: 20px', 'class' => 'max-w-20'])
                     ->extraInputAttributes([
-                        'class' => 'text-center max-w-10',
+                        'class' => 'text-center max-w-10 storage-input',
                         'min' => '0',
                         'step' => '1',
+                        'oninput' => 'calculateTotal(this)',
                     ])
                     ->columnSpanFull()
                     ->afterStateUpdated(function ($state, $record) {
@@ -208,12 +209,11 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->type('number')
                     ->placeholder('-')
                     ->rules(['integer', 'min:0'])
-                    // ->width('50px')
-                    // ->extraAttributes(['style' => 'max-width: 20px', 'class' => 'max-w-20'])
                     ->extraInputAttributes([
-                        'class' => 'text-center',
+                        'class' => 'text-center wip-input',
                         'min' => '0',
-                        'step' => '1'
+                        'step' => '1',
+                        'oninput' => 'calculateTotal(this)',
                     ])
                     ->afterStateUpdated(function ($state, $record) {
                         $record->update([
@@ -229,9 +229,10 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->rules(['integer', 'min:0'])
                     ->width('50px')
                     ->extraInputAttributes([
-                        'class' => 'text-center',
+                        'class' => 'text-center ng-input',
                         'min' => '0',
-                        'step' => '1'
+                        'step' => '1',
+                        'oninput' => 'calculateTotal(this)',
                     ])
                     ->afterStateUpdated(function ($state, $record) {
                         $record->update([
@@ -257,26 +258,44 @@ class LineStoDetailsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('lineModelDetail.model_id')
+                SelectFilter::make('lineModelDetail.model_id')
                     ->label('Model')
-                    ->relationship('lineModelDetail', 'model_id')
-                    ->searchable()
-                    ->preload()
                     ->options(function () {
-                        return \App\Models\LineModelDetail::distinct()
-                            ->pluck('model_id', 'model_id')
-                            ->sortKeys();
-                    }),
-                Tables\Filters\SelectFilter::make('lineModelDetail.qad_number')
-                    ->label('QAD Number')
-                    ->relationship('lineModelDetail', 'qad_number')
-                    ->searchable()
-                    ->preload()
-                    ->options(function () {
-                        return \App\Models\LineModelDetail::distinct()
-                            ->pluck('qad_number', 'qad_number')
+                        return LineStoDetail::with('lineModelDetail')
+                            ->get()
+                            ->pluck('lineModelDetail.model_id', 'lineModelDetail.model_id')
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
                             ->sortKeys();
                     })
+                    ->searchable()
+                    ->preload()
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['value'],
+                            fn(Builder $query, $value): Builder => $query->whereHas('lineModelDetail', function (Builder $query) use ($value) {
+                                $query->where('model_id', $value);
+                            })
+                        );
+                    }),
+                SelectFilter::make('lineModelDetail.qad_number')
+                    ->label('QAD')
+                    ->options(function () {
+                        return LineStoDetail::with('lineModelDetail')
+                            ->get()
+                            ->pluck('lineModelDetail.qad_number', 'lineModelDetail.qad_number')
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
+                            ->sortKeys();
+                    })
+                    ->searchable()
+                    ->preload()
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['value'],
+                            fn(Builder $query, $value): Builder => $query->whereHas('lineModelDetail', function (Builder $query) use ($value) {
+                                $query->where('qad_number', $value);
+                            })
+                        );
+                    }),
             ], layout: FiltersLayout::AboveContent)
             ->headerActions([
                 // Header actions disembunyikan

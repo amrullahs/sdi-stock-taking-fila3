@@ -214,40 +214,69 @@ class LineStoDetailResource extends Resource
             ->filters([
                 SelectFilter::make('period_id')
                     ->label('Period STO')
-                    ->relationship('periodSto', 'period_sto')
+                    ->options(function () {
+                        return \App\Models\LineStoDetail::with('periodSto')
+                            ->get()
+                            ->mapWithKeys(function ($detail) {
+                                $periodSto = $detail->periodSto;
+                                if ($periodSto && $periodSto->period_sto) {
+                                    return [$detail->period_id => \Carbon\Carbon::parse($periodSto->period_sto)->format('d-m-Y')];
+                                }
+                                return [];
+                            })
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
+                            ->sort();
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('line_id')
                     ->label('Line')
-                    ->options(Line::distinct()->pluck('line', 'id')->filter(fn($value) => !empty($value) && !is_null($value))->sort())
+                    ->options(function () {
+                        return \App\Models\LineStoDetail::with('line')
+                            ->get()
+                            ->pluck('line.line', 'line_id')
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
+                            ->sort();
+                    })
                     ->searchable()
+                    ->preload(),
+                SelectFilter::make('lineModelDetail.model_id')
+                    ->label('Model')
+                    ->options(function () {
+                        return \App\Models\LineStoDetail::with('lineModelDetail')
+                            ->get()
+                            ->pluck('lineModelDetail.model_id', 'lineModelDetail.model_id')
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
+                            ->sortKeys();
+                    })
+                    ->searchable()
+                    ->preload()
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['value'],
-                            fn(Builder $query, $value): Builder => $query->whereHas('lineSto', function (Builder $query) use ($value) {
-                                $query->where('line_id', $value);
+                            fn(Builder $query, $value): Builder => $query->whereHas('lineModelDetail', function (Builder $query) use ($value) {
+                                $query->where('model_id', $value);
                             })
                         );
                     }),
-                SelectFilter::make('lineModelDetail.model_id')
-                    ->label('Model')
-                    ->relationship('lineModelDetail', 'model_id')
-                    ->searchable()
-                    ->preload()
-                    ->options(function () {
-                        return \App\Models\LineModelDetail::distinct()
-                            ->pluck('model_id', 'model_id')
-                            ->sortKeys();
-                    }),
                 SelectFilter::make('lineModelDetail.qad_number')
                     ->label('QAD')
-                    ->relationship('lineModelDetail', 'qad_number')
+                    ->options(function () {
+                        return \App\Models\LineStoDetail::with('lineModelDetail')
+                            ->get()
+                            ->pluck('lineModelDetail.qad_number', 'lineModelDetail.qad_number')
+                            ->filter(fn($value) => !empty($value) && !is_null($value))
+                            ->sortKeys();
+                    })
                     ->searchable()
                     ->preload()
-                    ->options(function () {
-                        return \App\Models\LineModelDetail::distinct()
-                            ->pluck('qad_number', 'qad_number')
-                            ->sortKeys();
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['value'],
+                            fn(Builder $query, $value): Builder => $query->whereHas('lineModelDetail', function (Builder $query) use ($value) {
+                                $query->where('qad_number', $value);
+                            })
+                        );
                     }),
             ], layout: FiltersLayout::AboveContent)
             ->actions([

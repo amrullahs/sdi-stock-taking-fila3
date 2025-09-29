@@ -8,6 +8,8 @@ use App\Models\LineSto;
 use App\Models\LineStoDetail;
 use App\Observers\LineStoObserver;
 use App\Observers\LineStoDetailObserver;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
         // Register observers
         LineSto::observe(LineStoObserver::class);
         LineStoDetail::observe(LineStoDetailObserver::class);
+
+        // Register custom JavaScript for client-side calculations
+        FilamentAsset::register([
+            Js::make('filament-custom', __DIR__ . '/../../resources/js/filament-custom.js'),
+        ]);
     }
 }
