@@ -81,7 +81,12 @@ class StockOnHandResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('periodSto'))
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->with('periodSto')
+                    ->whereHas('periodSto', function (Builder $query) {
+                        $query->where('status', '!=', 'close');
+                    });
+            })
             ->columns([
                 // Default visible columns
                 Tables\Columns\TextColumn::make('periodSto.period_sto')

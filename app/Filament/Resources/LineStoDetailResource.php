@@ -85,6 +85,11 @@ class LineStoDetailResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->whereHas('periodSto', function (Builder $query) {
+                    $query->where('status', '!=', 'close');
+                });
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('periodSto.period_sto')
                     ->label('Period STO')
