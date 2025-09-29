@@ -224,6 +224,26 @@ class LineStoDetailResource extends Resource
                             })
                         );
                     }),
+                SelectFilter::make('lineModelDetail.model_id')
+                    ->label('Model')
+                    ->relationship('lineModelDetail', 'model_id')
+                    ->searchable()
+                    ->preload()
+                    ->options(function () {
+                        return \App\Models\LineModelDetail::distinct()
+                            ->pluck('model_id', 'model_id')
+                            ->sortKeys();
+                    }),
+                SelectFilter::make('lineModelDetail.qad_number')
+                    ->label('QAD')
+                    ->relationship('lineModelDetail', 'qad_number')
+                    ->searchable()
+                    ->preload()
+                    ->options(function () {
+                        return \App\Models\LineModelDetail::distinct()
+                            ->pluck('qad_number', 'qad_number')
+                            ->sortKeys();
+                    }),
             ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),

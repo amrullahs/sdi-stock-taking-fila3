@@ -257,21 +257,25 @@ class LineStoDetailsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                Tables\Filters\Filter::make('qad_number')
-                    ->form([
-                        Forms\Components\TextInput::make('qad_number')
-                            ->label('QAD Number')
-                            ->placeholder('Enter QAD Number')
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['qad_number'],
-                                fn(Builder $query, $qadNumber): Builder => $query->whereHas(
-                                    'lineModelDetail',
-                                    fn(Builder $query): Builder => $query->where('qad_number', 'like', "%{$qadNumber}%")
-                                )
-                            );
+                Tables\Filters\SelectFilter::make('lineModelDetail.model_id')
+                    ->label('Model')
+                    ->relationship('lineModelDetail', 'model_id')
+                    ->searchable()
+                    ->preload()
+                    ->options(function () {
+                        return \App\Models\LineModelDetail::distinct()
+                            ->pluck('model_id', 'model_id')
+                            ->sortKeys();
+                    }),
+                Tables\Filters\SelectFilter::make('lineModelDetail.qad_number')
+                    ->label('QAD Number')
+                    ->relationship('lineModelDetail', 'qad_number')
+                    ->searchable()
+                    ->preload()
+                    ->options(function () {
+                        return \App\Models\LineModelDetail::distinct()
+                            ->pluck('qad_number', 'qad_number')
+                            ->sortKeys();
                     })
             ], layout: FiltersLayout::AboveContent)
             ->headerActions([
