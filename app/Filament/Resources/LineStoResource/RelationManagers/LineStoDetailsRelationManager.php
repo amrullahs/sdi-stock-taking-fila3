@@ -260,11 +260,36 @@ class LineStoDetailsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
+                // SelectFilter::make('line_id')
+                //     ->label('Line')
+                //     ->options(function () {
+                //         return LineStoDetail::with('line')
+                //             ->get()
+                //             ->pluck('line.line', 'line_id')
+                //             ->filter(fn($value) => !empty($value) && !is_null($value))
+                //             ->sort();
+                //     })
+                //     ->searchable()
+                //     ->preload()
+                //     ->query(function (Builder $query, array $data): Builder {
+                //         return $query->when(
+                //             $data['value'],
+                //             fn(Builder $query, $value): Builder => $query->where('line_id', $value)
+                //         );
+                //     }),
                 SelectFilter::make('lineModelDetail.model_id')
                     ->label('Model')
                     ->options(function () {
-                        return LineStoDetail::with('lineModelDetail')
-                            ->get()
+                        // Get active line_id filter value
+                        $activeLineId = request()->query('tableFilters.line_id');
+
+                        $query = LineStoDetail::with('lineModelDetail');
+
+                        if ($activeLineId) {
+                            $query->where('line_id', $activeLineId);
+                        }
+
+                        return $query->get()
                             ->pluck('lineModelDetail.model_id', 'lineModelDetail.model_id')
                             ->filter(fn($value) => !empty($value) && !is_null($value))
                             ->sortKeys();
@@ -282,8 +307,16 @@ class LineStoDetailsRelationManager extends RelationManager
                 SelectFilter::make('lineModelDetail.qad_number')
                     ->label('QAD')
                     ->options(function () {
-                        return LineStoDetail::with('lineModelDetail')
-                            ->get()
+                        // Get active line_id filter value
+                        $activeLineId = request()->query('tableFilters.line_id');
+
+                        $query = LineStoDetail::with('lineModelDetail');
+
+                        if ($activeLineId) {
+                            $query->where('line_id', $activeLineId);
+                        }
+
+                        return $query->get()
                             ->pluck('lineModelDetail.qad_number', 'lineModelDetail.qad_number')
                             ->filter(fn($value) => !empty($value) && !is_null($value))
                             ->sortKeys();
