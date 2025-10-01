@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\Section;
 
 class LineStoDetailResource extends Resource
 {
@@ -108,11 +109,11 @@ class LineStoDetailResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('lineModelDetail.qad_number')
-                    ->label('QAD')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                // Tables\Columns\TextColumn::make('lineModelDetail.qad_number')
+                //     ->label('QAD')
+                //     ->sortable()
+                //     ->searchable()
+                //     ->toggleable(),
                 Tables\Columns\ImageColumn::make('lineModelDetail.image')
                     ->label('Image')
                     ->square(false)
@@ -145,31 +146,35 @@ class LineStoDetailResource extends Resource
                                 }
                             }
                         }
-
                         // Jika tidak ada file yang ditemukan, return null untuk fallback ke defaultImageUrl
                         return null;
                     })
                     ->defaultImageUrl(url('/images/no-image.svg'))
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('lineModelDetail.part_name')
-                    ->label('Part Name')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable()
+
+                Tables\Columns\TextColumn::make('lineModelDetail.qad_number')
+                    ->label('QAD - Part Desc - Onhand')
+                    ->formatStateUsing(function ($record) {
+                        $qad = $record->lineModelDetail?->qad_number ?? '';
+                        $partName = $record->lineModelDetail?->part_name ?? '';
+                        $storage = $record->lineModelDetail?->storage ?? '';
+                        $partNumber = $record->lineModelDetail?->part_number ?? '';
+                        $totalOnHand = $record->total_on_hand;
+                        // Make QAD number bold
+                        $qadFormatted = $qad ? '<strong>' . $qad . '</strong>' : '';
+                        $totalOnHandFormatted = $totalOnHand !== null ? 'OnHand = ( <strong>' . $totalOnHand . '</strong> )' : '';
+                        $storageFormatted = $storage !== null ? 'Storage = ( <strong>' . $storage . '</strong> )' : '';
+
+                        return new \Illuminate\Support\HtmlString(
+                            collect([$qadFormatted, $partName, $partNumber, $storageFormatted,  $totalOnHandFormatted])
+                                ->filter()
+                                ->join('<br>')
+                        );
+                    })
+                    ->searchable(['lineModelDetail.qad_number', 'lineModelDetail.part_name', 'lineModelDetail.part_number'])
+
+                    ->visibleFrom('md')
                     ->wrap(),
-                Tables\Columns\TextColumn::make('lineModelDetail.part_number')
-                    ->label('Part Number')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable()
-                    ->wrap(),
-                Tables\Columns\TextColumn::make('total_on_hand')
-                    ->label('Total On Hand')
-                    ->numeric()
-                    ->sortable()
-                    ->getStateUsing(function ($record) {
-                        return $record->total_on_hand;
-                    }),
                 Tables\Columns\TextInputColumn::make('storage_count')
                     ->label('Storage Count')
                     ->type('number')
@@ -177,7 +182,7 @@ class LineStoDetailResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable()
-                    ->width('25px')
+                    ->width('5px')
                     ->extraAttributes(['class' => 'text-center']),
                 Tables\Columns\TextInputColumn::make('wip_count')
                     ->label('WIP Count')
@@ -278,7 +283,14 @@ class LineStoDetailResource extends Resource
                             })
                         );
                     }),
-            ], layout: FiltersLayout::AboveContent)
+            ], layout: FiltersLayout::AboveContentCollapsible)
+            ->filtersFormColumns(8)
+            ->filtersFormSchema(fn(array $filters): array => [
+                $filters['period_id'],
+                $filters['line_id'],
+                $filters['lineModelDetail.model_id'],
+                $filters['lineModelDetail.qad_number'],
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

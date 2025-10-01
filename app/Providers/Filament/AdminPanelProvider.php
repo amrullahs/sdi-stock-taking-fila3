@@ -21,6 +21,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Bostos\ReorderableColumns\ReorderableColumnsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -91,6 +92,9 @@ class AdminPanelProvider extends PanelProvider
                     ->preserveOnDB(true), // Enable database storage
                 ActivitylogPlugin::make()
                     ->resource(\App\Filament\Resources\ActivitylogResource::class),
+                ReorderableColumnsPlugin::make()
+                    // ->persistToSession() // or ->persistToDatabase()
+                    ->persistToDatabase(),
             ])
             ->authMiddleware([
                 Authenticate::class,

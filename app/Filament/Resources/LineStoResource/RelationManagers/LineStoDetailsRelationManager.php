@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\Log;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 
+use Bostos\ReorderableColumns\Concerns\HasReorderableColumns;
+
 class LineStoDetailsRelationManager extends RelationManager
 {
     use HasResizableColumn;
+    use HasReorderableColumns;
 
     protected static string $relationship = 'lineStoDetails';
 
@@ -192,61 +195,57 @@ class LineStoDetailsRelationManager extends RelationManager
                     ->type('number')
                     ->placeholder('-')
                     ->rules(['integer', 'min:0'])
-                    ->extraInputAttributes([
-                        'class' => 'text-center max-w-10 storage-input',
-                        'min' => '0',
-                        'step' => '1',
-                        'oninput' => 'calculateTotal(this)',
-                    ])
-                    ->columnSpanFull()
+                    // ->extraInputAttributes([
+                    //     'oninput' => 'calculateTotal(this)',
+                    // ])
+                    // ->columnSpanFull()
                     ->afterStateUpdated(function ($state, $record) {
                         $record->update([
                             'storage_count' => (int) $state,
                             'total_count' => (int) $state + $record->wip_count + $record->ng_count
                         ]);
                     }),
-
                 Tables\Columns\TextInputColumn::make('wip_count')
                     ->label('WIP')
                     ->type('number')
                     ->placeholder('-')
                     ->rules(['integer', 'min:0'])
-                    ->extraInputAttributes([
-                        'class' => 'text-center wip-input',
-                        'min' => '0',
-                        'step' => '1',
-                        'oninput' => 'calculateTotal(this)',
-                    ])
+                    // ->extraInputAttributes([
+                    //     'oninput' => 'calculateTotal(this)',
+                    // ])
                     ->afterStateUpdated(function ($state, $record) {
                         $record->update([
                             'wip_count' => (int) $state,
                             'total_count' => $record->storage_count + (int) $state + $record->ng_count
                         ]);
                     }),
-
                 Tables\Columns\TextInputColumn::make('ng_count')
                     ->label('NG')
                     ->type('number')
                     ->placeholder('-')
                     ->rules(['integer', 'min:0'])
-                    ->width('50px')
-                    ->extraInputAttributes([
-                        'class' => 'text-center ng-input',
-                        'min' => '0',
-                        'step' => '1',
-                        'oninput' => 'calculateTotal(this)',
-                    ])
+                    // ->extraInputAttributes([
+                    //     'oninput' => 'calculateTotal(this)',
+                    // ])
                     ->afterStateUpdated(function ($state, $record) {
                         $record->update([
                             'ng_count' => (int) $state,
                             'total_count' => $record->storage_count + $record->wip_count + (int) $state
                         ]);
                     }),
-                Tables\Columns\TextColumn::make('total_count')
+
+                Tables\Columns\TextInputColumn::make('total_count')
                     ->label('Total')
-                    ->numeric()
-                    ->sortable()
-                    ->getStateUsing(fn($record) => $record->storage_count + $record->wip_count + $record->ng_count),
+                    ->type('number')
+                    ->disabled()
+                    ->getStateUsing(fn($record) => $record->storage_count + $record->wip_count + $record->ng_count)
+                // ->afterStateUpdated(function ($state, $record) {
+                //     $record->update(['total_count' => $state]);
+                // })
+                // ->extraInputAttributes([
+                //     'oninput' => 'calculateTotal(this)',
+                // ])
+                ,
                 Tables\Columns\TextInputColumn::make('remark')
                     ->label('Remark')
                     ->type('textarea')
@@ -343,7 +342,9 @@ class LineStoDetailsRelationManager extends RelationManager
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
-            ]);
-        // ->defaultSort('lineModelDetail.model_id', 'asc');
+            ])
+            // ->defaultSort('lineModelDetail.model_id', 'asc');
+
+            ->reorderableColumns('LineStoDetailModal'); // Use a unique key
     }
 }
